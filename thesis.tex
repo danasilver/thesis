@@ -1,0 +1,115 @@
+\documentclass[midd]{thesis}
+
+\usepackage{graphicx}
+\usepackage{times}
+
+\bibliographystyle{plain}
+
+\title {MiddGuard}
+
+\author {Dana Silver}
+\adviser {Professor Christopher Andrews}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Your abstract goes here.
+\end{abstract}
+
+\begin{acknowledgements}
+Your acknowledgements go here.
+\end{acknowledgements}
+
+\contentspage
+\tablelistpage
+\figurelistpage
+
+\normalspacing \setcounter{page}{1} \pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Visual Analytics}
+\begin{enumerate}
+  \item Why this is a useful tool in the context of visual analytics.
+\end{enumerate}
+
+\chapter{Background}
+
+\section{State of the Art}
+  \begin{enumerate}
+    \item Tools currently exist and inspired MiddGuard.
+    \begin{enumerate}
+      \item Improvise
+      \item Eagle Eyes
+    \end{enumerate}
+  \end{enumerate}
+
+\section{Previous MiddGuard Work}
+\begin{enumerate}
+  \item Front-end cache work from Fall 2015
+  \item MiddGuard Version 1 (Summer 2014)
+  \begin{enumerate}
+    \item Reusable components
+    \item Award/VAST 2015 challenge
+  \end{enumerate}
+\end{enumerate}
+
+\chapter{Implementation}
+
+\section{Concepts}
+  \begin{enumerate}
+    \item Dataflow programming
+    \item Visual programming
+    \item Collaborative/real-time
+    \item Extensibility
+    \begin{enumerate}
+      \item Front-end views
+      \item Back-end analytic nodes
+    \end{enumerate}
+    \item Reusable nodes (agnostic of input/output data)
+    \item Technology choices
+  \end{enumerate}
+
+\section{Technology}
+  \begin{enumerate}
+    \item Node.js
+    \item Relational database (instead of NoSQL)
+    \item Socket.io
+    \item ORM
+    \item Backbone.js
+  \end{enumerate}
+
+\chapter{Results}
+  \begin{enumerate}
+    \item Test/example case (tweet analysis)
+    \item Ease of use for developer
+    \item APIs exposed on front-end and back-end
+  \end{enumerate}
+
+\chapter{Discussion}
+  \begin{enumerate}
+    \item Use in real investigation (VAST Challenge 2016)
+    \item Room for improvement
+    \begin{enumerate}
+      \item Better caching on front-end to help developers optimize DOM/memory
+      usage
+      \item Have to see if there is any else I don't have time to implement
+    \end{enumerate}
+  \end{enumerate}
+
+\chapter{Conclusion}
+  \begin{enumerate}
+    \item Revisit points from previous sections
+    \item Why MiddGuard is an important visual analtics tool
+    \item Open source prospects
+  \end{enumerate}
+
+\appendix
+\chapter{Chapter 1 of appendix}
+Appendix chapter 1 text goes here
+
+\bibliography{thesis}
+
+\end{document}
