@@ -1,9 +1,9 @@
 NAME = thesis
 
-$(NAME).pdf: $(NAME).tex $(NAME).bib
-	pdflatex $(NAME)
+$(NAME).pdf: *.tex *.bib
 	pdflatex $(NAME)
 	bibtex $(NAME)
+	pdflatex $(NAME)
 	pdflatex $(NAME)
 
 .PHONY: open
@@ -12,4 +12,4 @@ open:
 
 .PHONY: clean
 clean:
-	rm -f $(NAME).{pdf,log,aux,dvi,bbl,blg,lot,lof}
+	rm -f *.{pdf,log,aux,dvi,bbl,blg,lot,lof}
