@@ -1,5 +1,7 @@
 NAME = thesis
 
+all: clean $(NAME).pdf
+
 $(NAME).pdf: *.tex *.bib
 	pdflatex $(NAME)
 	bibtex $(NAME)
