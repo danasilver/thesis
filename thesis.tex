@@ -642,7 +642,9 @@ contains a list, \texttt{inputs}, of the attributes the module requires for each
 member of the input group. The second export is an array of output attributes
 for each member element the module will output.
 
-The outputs correspond directly to the contents of the third export, a function called \texttt{createTable}. The \texttt{createTable} function is used to create the backing table for a node. All nodes
+The outputs correspond directly to the contents of the third export, a function
+called \texttt{createTable}. The \texttt{createTable} function is used to create
+the backing table for a node. All nodes
 
 \begin{figure}[!ht]
   \centering
@@ -659,20 +661,43 @@ example, User A makes changes, which are persisted to a data store. User B logs
 in some time later and the changes User A made are loaded from the database so
 User B can view them.
 
-Synchronous collaboration is more difficult. Web application communications are
-largely based on the HTTP protocol. Data is transferred from the web server to
-the client in an HTTP session, which is made up of a request from the client and
-a response from the server. The client must initiate an HTTP request before the
-server can send data. This is problematic for real-time communications. Like in
-the asynchronous example, User A might make a change, which should be
-immediately pushed to all other connected clients. User A can make an HTTP
-request to tell the server about the change, but there is no way for the server
-to tell other clients about the change immediately. With HTTP, User B must
-explicitly request the update, which requires either knowing when to check for
-an update (unreasonable) or continuously polling the server for changes
-(inefficient).
+Synchronous collaboration is more difficult to implement. Web application
+communications are largely based on the HTTP protocol. Data is transferred from
+the web server to the client in an HTTP session, which is made up of a request
+from the client and a response from the server. The client must initiate an HTTP
+request before the server can send data. This is problematic for real-time
+communications. Like in the asynchronous example, User A might make a change,
+which should be immediately pushed to all other connected clients. User A can
+make an HTTP request to tell the server about the change, but there is no way
+for the server to tell other clients about the change immediately. With HTTP,
+User B must explicitly request the update, which requires either knowing when to
+check for an update (unreasonable) or continuously polling the server for
+changes (inefficient).
 
-WebSockets solve real-time communications, and are implemented in place of HTTP for all of MiddGuard's server-client communications, besides authentication.
+WebSockets help solve real-time communications, and are implemented in place of
+HTTP for all of MiddGuard's server-client communications after a user is
+authenticated and logged in. WebSockets is a bidirectional event-driven
+communication protocol designed for browers and servers to exchange data without
+relying on HTTP requests and responses \cite{mdn-websockets}. WebSockets are
+layered on TCP. The connection from the browser to the server is initiated with
+the HTTP Upgrade header and client-server handshake after the browser has
+received a traditional HTTP response from the server with the code to perform
+the Upgrade request \cite{RFC6455}.
+
+The MiddGuard server registers WebSocket event handlers for its internal
+components and for nodes' data. Data on the front-end is structured using
+Backbone.js Models and Collections, which traditionally use HTTP to perform
+create, read, update, and delete (CRUD) operations. We use third-party
+libraries, Backbone.ioBind and Backbone.ioSync, to replace the HTTP requests
+with a similar protocol using WebSocket events. A HTTP request \texttt{POST
+/graphs} becomes \texttt{socket.emit('graphs:create', data)}. Emitted from the
+the browser, these events offer no real advantage of their corresponding HTTP
+requests. The use case for WebSockets is emitting events and data from the
+server to the client, which is impossible over HTTP. With the connection open,
+we can send events from the server to the client to create, update, and delete
+(the server does not need to read data from the client) Backbone Models and
+Collections whenever the data change on the server, enabling real-time updates
+and collaboration for clients.
 
   \begin{enumerate}
     \item Dataflow programming
