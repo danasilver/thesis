@@ -21,11 +21,22 @@
 \maketitle
 
 \begin{abstract}
-Your abstract goes here.
+
+MiddGuard is a web framework for visual analytics.
+
 \end{abstract}
 
 \begin{acknowledgements}
-Your acknowledgements go here.
+
+Professor Andrews for his continued advisorship since we started collaborating
+over the summer of 2014. His work in visual analytics continues to inform and
+inspire my work on MiddGuard.
+
+My family and friends for their support over the last four years.
+
+The Bicentennial Research Fund for their financial support of my student
+research position the first summer I worked on MiddGuard.
+
 \end{acknowledgements}
 
 \contentspage
@@ -44,6 +55,7 @@ Be able to create bespoke visualizations quickly.
 \end{enumerate}
 
 \section{Previous Work on MiddGuard}
+
 \subsection{VAST 2014}
 
 The VAST Challenge is a visual analytics competition organized by Visual
@@ -95,7 +107,7 @@ vehicle tracking data from company cars, an ESRI shapefile of the island where
 GAStech is located, and an illustrated tourist map of the island. Tracking data
 contained lists of latitude, longitude, timestamp, and car ID.
 
-We wrote a preprocessing script written in Python to iterate through individual
+We wrote a preprocessing script in Python to iterate through individual
 cars' GPS traces from the vehicle tracking data, identify periods where a car
 was stopped, and save the coordinate where the car stopped as a destination for
 the associated car. On the front-end, an interactive visualization rendered the
@@ -121,12 +133,11 @@ From the VAST 2014 Challenge we drew conclusions that influenced the first
 version of MiddGuard. We found that the while the web could be an effective
 platform for visual analytics, the overhead of creating custom tools, getting
 those tools to work with the rest of the system, and implementation bugs in the
-server-client communication hindered our progress investigating.
-
-The framework's primary features were automatic persistence to a database, data
-transport between the server and connected web clients in real-time, centralized
-data storage in the web browser, and visualization module loading/unloading in
-the browser.
+server-client communication hindered our progress investigating. To address
+these issues, the framework's primary features were automatic persistence to a
+database, data transport between the server and connected web clients in
+real-time, centralized data storage in the web browser, and visualization module
+loading/unloading in the browser.
 
 This version of MiddGuard achieved flexibility by automatically loading three
 types of customizable packages. These were referred to as analytics, modules,
@@ -135,40 +146,110 @@ call from a front-end visualization. They could be passed data from the
 front-end. Using the VAST 2014 example, they were meant to handle computations
 like finding other destinations near a point of interest.
 
-Modules were front-end visualizations. JavaScript and CSS files required for the
-visualization were declared in a package's \texttt{manifest.json} file. The
-database was accessible on the front-end, with each table represented by a
-Backbone.js collection. Modules could access collections using the global
-\texttt{middguard.entities} object. Collections were updated in real-time over
-WebSockets, so by listening to changes in a collection or the models it
-contained, a visualization could update in real-time based on changing data on
-the server. By extending a base MiddGuard View \cite{backbone} and registering
-with MiddGuard by calling a function \texttt{middguard.module(name,
-constructor)}, visualizations could be loaded and unloaded from the window with
-a button click from MiddGuard's sidebar.
+Modules were front-end visualizations that used JavaScript and CSS to render and
+style elements in the browser's DOM. Visualizations were interactive, could
+communicate with the backend to update and persist data, and could save state to
+a global state handler to link visualizations to each other. For example, a
+master brushable timeline saves the boundaries of the brushed region to its
+state, which other timelines read to update their detail view.
 
-Models were the final piece of customization, intended to give the database
-flexible schema to work with any data. Models were a combination of database
-migrations and a Bookshelf.js \cite{bookshelf} model declaration. MiddGuard
-included a \texttt{migrate} command to migrate models on a table-by-table basis,
-applying the results a single database. The model declarations were patched to
-emit WebSocket events on create, read, update, and delete events so that
-analytics packages could be written to use the models, persist changes, and
-communicate those changes to connected clients without needing to explicitly
-alert connected clients. Relationships could be established between models using
-a special \texttt{relationship} table that stored pairs of table names and row
-ids.
+Models were table-level schema for the database, intended to allow MiddGuard to
+work with any data. A database table could then be created from each model. The
+entire database was accessible on the front-end, with each table represented by
+a Backbone.js Collection, which acts like an array of table rows. Collections
+were updated in real-time using a publish-subscribe like method. Updates to a
+collection on the front-end and to a models on the back-end were communicated to
+one another in real-time. This allowed investigators to modify the data in
+visualization modules and analytics packages without implementing communication.
+By listening to changes in a Collection, a visualization could rerender as soon
+as data changed on the server or in another investigator's browser. The
+real-time, database-persisted communication protocol for models allowed
+investigators to collaborate synchronously and asynchronously.
+
+\subsection{VAST 2015}
+
+Christopher Andrews and Jullian Billings used MiddGuard for the VAST 2015
+Challenge. They report that framework allowed them to take a modular approach to
+developing tools for the investigation, deploying visualizations as needed
+without needing plan and coordinate the entire investigation before it began.
+They expanded the front-end state manager and used it to link their
+visualizations: ``The shared state provided by Middguard meant that the modules
+could be easily snapped together into an integrated environment, facilitating
+the flow of information between the tools. This sped development because tools
+could be simple and focused, with data selection and filtering shared between
+tools.'' \cite{middguard-dinofunworld}. MiddGuard was well received by visual
+analytics professionals, winning the VAST 2015 Challenge award for integrated
+analysis environment.
+
+The VAST 2015 Challenge investigation revealed some shortcomings of MiddGuard.
+Storing all data on the database wasn't realistic. Datasets for investigations,
+including VAST, are often several gigabytes in size, more than can fit in the
+browser while maintaining the performance required for interactive
+visualizations. Even with modifications to load subsets of the data, the
+Backbone Collections quickly grew large, and filled with unnecessary data not
+reflected in any active visualizations. View Reference Counting was designed to
+address this issue.
+
+Analytics packages, one of MiddGuard's built in tools for extensibility,
+designed to run arbitrary code via remote procedure calls from the front-end,
+were not sufficient to obviate the need for preprocessing scripts. The
+investigators still wrote Python scripts to transform data and alter the
+database outside MiddGuard. The lack of record of how these scripts were used
+added a layer of opaqueness to the analytic process, making results hard to
+reproduce and collaboration difficult.
 
 \subsection{View Reference Counting}
 
-\begin{enumerate}
-  \item MiddGuard Version 1 (Summer 2014)
-  \begin{enumerate}
-    \item Reusable components
-    \item Award/VAST 2015 challenge
-  \end{enumerate}
-\end{enumerate}
+In the original implementation, one of the MiddGuard's weaknesses was handling
+large amounts of data on the front-end. The framework was implemented to load
+the entire database into the browser with the idea that investigators would need
+access to all data during the investigation. MiddGuard's server would continue
+to push data updates to connected clients as they became available. However,
+with the large dataset from the VAST 2015 Challenge, the browser was not able to
+handle all the data at once. MiddGuard was modified with a stopgap solution
+during VAST 2015. Instead of loading all data from the outset, visualization
+modules made custom database queries as necessary.
 
+This did not solve the problem of unused data in the browser. Once downloaded to
+the browser data was never removed, even after the visualization that required
+it was. MiddGuard stores all data in a central location to avoid the duplication
+that would occur by having each visualization store its own data. This makes it
+impossible for a visualization that has requested data to clean up after itself.
+Another visualization may have requested and currently be using the same data.
+
+To keep the deduplication advantages of central storage and clean up after
+visualizations that were removed from the browser, we implemented automatic
+memory management in the browser called View Reference Counting. View Reference
+Counting (VRC) maintains an array of references to the views that use each piece
+of data as an attribute on the datum's Backbone.js Model. When a visualization
+(a Backbone.js View, hence the name) is removed, its reference is removed from
+the model. When a model has no view references it is removed from the browser.
+
+Figures \ref{fig:vrc} and \ref{fig:vrccropped} demonstrate the efficacy of View
+Reference Counting through the three memory snapshots taken by the Google Chrome
+DevTools Memory Profiler. After a view with several megabytes of data was added
+and removed, MiddGuard cleaned up the data and the browser was able to reclaim
+the memory.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{devtools-snapshot}
+  \caption{A screen capture of the Google Chrome DevTools Profiler demonstrating
+  the efficacy of View Reference Counting. The panel on the left shows three
+  snapshots. Snapshot 1 was taken before a view has was added. Snapshot 2 was
+  taken after a view was added and rendered with a significant amount of data
+  loaded into the browser. Snapshot 3 was taken after that view was removed and
+  the memory was reclaimed.}
+  \label{fig:vrc}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics{devtools-snapshot-cropped}
+  \caption{The snapshots portion of figure \ref{fig:vrc}, cropped for
+  readability.}
+  \label{fig:vrccropped}
+\end{figure}
 
 \chapter{Background}
 
@@ -683,7 +764,7 @@ the backing table for a node. All nodes
 \section{Real-time Collaboration}
 
 MiddGuard supports asynchronous and synchronous collaboration between multiple
-developers. Asynchronous collaboration is common in a web appliation. For
+developers. Asynchronous collaboration is common in a web application. For
 example, User A makes changes, which are persisted to a data store. User B logs
 in some time later and the changes User A made are loaded from the database so
 User B can view them.
@@ -779,7 +860,9 @@ and collaboration for clients.
 
 \appendix
 \chapter{Chapter 1 of appendix}
-Appendix chapter 1 text goes here
+
+Code will go here. Approximately 5700 lines and 100 typeset pages (landscape,
+two columns, 6pt).
 
 \bibliography{thesis}
 
