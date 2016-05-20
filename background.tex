@@ -13,8 +13,8 @@
 \subsection{VAST 2014}
 
 Initial work on the MiddGuard framework began during summer 2014 as a research
-project with Christopher Andrews and Dana Silver. For a VAST 2014 Mini-Challenge
-2 \cite{vast2014mc2} submission, researchers created a web interface to
+project conducted by Christopher Andrews and Dana Silver. For a VAST 2014 Mini-Challenge
+2 \cite{vast2014mc2} submission, we created a web interface to
 visualize and analyze data from the challenge scenario. Data were preprocessed
 using several disjoint Python scripts and the resulting manipulations were
 persisted to a SQLite database. On the back-end of the web service, a simple
@@ -25,7 +25,7 @@ those in the preprocessing stage on a request-by-request basis based on analyst
 input in the interactive visualizations.
 
 An example of the flow between preprocessing scripts, back-end server, and
-front-end visualization is how analysts identified points of interest in the
+front-end visualization is how we identified points of interest in the
 Mini-Challenge 2 geographical data. The VAST 2014 Challenge \cite{vast2014}
 posited the following fictitous scenario:
 
@@ -58,22 +58,21 @@ The VAST 2014 submission was unsuccessful. Working on the tool described above
 took most of the available time and investigators were not left with sufficient
 time to complete the investigation and write up the results.
 
-The first version of MiddGuard, which was developed during the same period of
-summer research at Middlebury, attempted to generalize parts of the web server
-and front-end that could be reused throughout multiple investigations, while
-keeping the framework unopinionated with respect to the data it could handle.
-The framework's primary features were automatic persistence to a database, data
+The first version of MiddGuard, which was developed in response to summer
+research at Middlebury, attempted to generalize parts of the web server and
+front-end that could be reused throughout multiple investigations, while keeping
+the framework unopinionated with respect to the data it could handle. The
+framework's primary features were automatic persistence to a database, data
 transport between the server and connected web clients in real-time, centralized
-data storage in the web browser, and visualization loading/unloading in the
-browser.
+data storage in the web browser, and visualization module loading/unloading in
+the browser.
 
 This version of MiddGuard achieved flexibility by automatically loading three
-types of customizable packages based on location in the file system. These were
-referred to as analytics, modules, and models. Analytics were scripts that could
-be triggered by a remote procedure call from a front-end visualization. They
-could be passed data from the front-end. Using the VAST 2014 example, they were
-meant to handle computations like finding other destinations near a point of
-interest.
+types of customizable packages. These were referred to as analytics, modules,
+and models. Analytics were scripts that could be triggered by a remote procedure
+call from a front-end visualization. They could be passed data from the
+front-end. Using the VAST 2014 example, they were meant to handle computations
+like finding other destinations near a point of interest.
 
 Modules were front-end visualizations. JavaScript and CSS files required for the
 visualization were declared in a package's \texttt{manifest.json} file. The
