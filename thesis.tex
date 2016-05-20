@@ -46,57 +46,84 @@ Be able to create bespoke visualizations quickly.
 \section{Previous Work on MiddGuard}
 \subsection{VAST 2014}
 
-Initial work on the MiddGuard framework began during summer 2014 as a research
-project conducted by Christopher Andrews and Dana Silver. For a VAST 2014 Mini-Challenge
-2 \cite{vast2014mc2} submission, we created a web interface to
-visualize and analyze data from the challenge scenario. Data were preprocessed
-using several disjoint Python scripts and the resulting manipulations were
-persisted to a SQLite database. On the back-end of the web service, a simple
-RESTful Python web server implemented with Flask \cite{flask} and Flask RESTful
-\cite{flask-restful} queried the database and transformed data for various
-front-end visualizations. The server also performed manipulations in addition
-those in the preprocessing stage on a request-by-request basis based on analyst
-input in the interactive visualizations.
-
-An example of the flow between preprocessing scripts, back-end server, and
-front-end visualization is how we identified points of interest in the
-Mini-Challenge 2 geographical data. The VAST 2014 Challenge \cite{vast2014}
-posited the following fictitous scenario:
+The VAST Challenge is a visual analytics competition organized by Visual
+Analytics Community with results presented at IEEE VIS. The challenge gives
+competitors a description of a crime scenario and data surrounding the crime. It
+asks analysts to create and use tools to investigate the data to indentify
+abnormalities, people of interest, and clues for the police to pursue. The VAST
+2014 Challenge \cite{vast2014} posited the following fictitous scenario:
 
 \begin{quote}
-
 In January, 2014, the leaders of GAStech are celebrating their new-found fortune
 as a result of the initial public offering of their very successful company. In
 the midst of this celebration, several employees of GAStech go missing. An
 organization known as the Protectors of Kronos (POK) is suspected in the
 disappearance, but things may not be what they seem.
-
 \end{quote}
 
-Available data for Mini-Challenge 2 included vehicle tracking data from
-company cars, an ESRI shapefile of the island where GAStech is located, and an
-illustrated tourist map of the island. Tracking data contained lists of
-latitude, longitude, timestamp, and car ID. A preprocessing script iterated
-through each trace's points, identified periods where a car was stopped for
-greater than 120 seconds, and saved that coordinate as a destination for the
-associated car. A visualization used TopoJSON \cite{topojson-spec} generated
-from the shapefile and the tracking data to draw a map of the city overlayed
-with cars' movements and destinations. By selecting a destination in the
-visualization, an investigator could create a point of interest based on the
-names of locations in the tourist map and persist the association of point of
-interest and destination to the database. During the persistence step other
-destinations within a certain radius would also be associate with that point of
-interest.
+During summer 2014, Christopher Andrews and Dana Silver collaborated on a
+submission for VAST 2014 Mini-Challenge 2, one of four challenges (including an
+all encompassing ``Grand Challenge'') dealing with the VAST 2014 Challenge
+scenario.
 
-The VAST 2014 submission was unsuccessful. Working on the tool described above
-took most of the available time and investigators were not left with sufficient
-time to complete the investigation and write up the results.
+For our VAST 2014 submission, we created a web interface to visualize and
+analyze data from the challenge scenario. Data were preprocessed using several
+disjoint Python scripts and the resulting manipulations were persisted to a
+SQLite database. On the back-end of the web service, a simple RESTful Python web
+server implemented with Flask \cite{flask} and Flask RESTful
+\cite{flask-restful} queried the database and transformed data for various
+front-end visualizations. The server also performed manipulations in addition
+those in the preprocessing stage on a request-by-request basis based on analyst
+input in the interactive visualizations. Figure \ref{fig:vast2014} shows the web
+interface for our tool.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{vast-mc2-2014-cropped-scaled}
+  \caption{The web interface for Andrews and Silver's VAST 2014 entry. The
+  visualizations, from left to right, are a list of people, a master brushable
+  timeline and individual timelines for each person listed with selectable
+  events, and a map of GPS traces from the individuals' cars.}
+  \label{fig:vast2014}
+\end{figure}
+
+For an example of the flow and feedback loop between preprocessing scripts,
+back-end server, and front-end visualizations we look how we used the
+Mini-Challenge 2 geographical data to identify points of interest and associate
+them with car destinations. The VAST 2014 Mini-Challenge 2 dataset included
+vehicle tracking data from company cars, an ESRI shapefile of the island where
+GAStech is located, and an illustrated tourist map of the island. Tracking data
+contained lists of latitude, longitude, timestamp, and car ID.
+
+We wrote a preprocessing script written in Python to iterate through individual
+cars' GPS traces from the vehicle tracking data, identify periods where a car
+was stopped, and save the coordinate where the car stopped as a destination for
+the associated car. On the front-end, an interactive visualization rendered the
+shapefile and preprocessed tracking data to draw a map of the city overlayed
+with cars' movements and destinations. We created points of interest on the map
+using car destinations and names from the tourist map. Persisting the
+association of point of interest and a single destination to the database ran a
+procedure that identified other nearby destinations to automatically associate
+with the same point of interest.
+
+Our VAST 2014 submission was unsuccessful. Working on the tool took most of the
+available time and we were not left with sufficient time to complete the
+investigation and write up the results.
+
+\subsection{MiddGuard: Summer 2014}
 
 The first version of MiddGuard, which was developed in response to summer
 research at Middlebury, attempted to generalize parts of the web server and
 front-end that could be reused throughout multiple investigations, while keeping
-the framework unopinionated with respect to the data it could handle. The
-framework's primary features were automatic persistence to a database, data
+the framework unopinionated with respect to the data it could handle.
+
+From the VAST 2014 Challenge we drew conclusions that influenced the first
+version of MiddGuard. We found that the while the web could be an effective
+platform for visual analytics, the overhead of creating custom tools, getting
+those tools to work with the rest of the system, and implementation bugs in the
+server-client communication hindered our progress investigating.
+
+The framework's primary features were automatic persistence to a database, data
 transport between the server and connected web clients in real-time, centralized
 data storage in the web browser, and visualization module loading/unloading in
 the browser.
