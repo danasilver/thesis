@@ -4,8 +4,42 @@
 \usepackage{times}
 \usepackage{url}
 \usepackage{listings}
+\usepackage{lscape}
+\usepackage{multicol}
 
-\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true}
+\usepackage{xcolor}
+
+\definecolor{lightgray}{HTML}{A0A1A7}
+\definecolor{brown}{rgb}{.8, .4, .0}
+\definecolor{red}{HTML}{E45649}
+\definecolor{green}{HTML}{50A14F}
+\definecolor{purple}{HTML}{A626A4}
+
+\lstdefinelanguage{javascript}{
+ keywords={break, case, catch, continue, debugger, default, delete, do, else, finally, for, function, if, in, instanceof, new, return, switch, this, throw, try, typeof, var, void, while, with},
+ keywordstyle=\color{purple}\textbf,
+ ndkeywords={class, export, boolean, throw, implements, import, this},
+ ndkeywordstyle=\color{red}\bfseries,
+ identifierstyle=\color{black},
+ sensitive=false,
+ comment=[l]{//},
+ morecomment=[s]{/*}{*/},
+ commentstyle=\color{lightgray}\ttfamily,
+ stringstyle=\color{green}\ttfamily,
+ morestring=[b]',
+ morestring=[b]"
+}
+
+\lstset{
+  extendedchars=true,
+  basicstyle=\footnotesize\ttfamily,
+  showstringspaces=false,
+  showspaces=false,
+  tabsize=2,
+  breaklines=true,
+  showtabs=false,
+  captionpos=b
+}
 
 \graphicspath{ {images/} }
 
@@ -588,7 +622,7 @@ an array called \texttt{connections}. Each object within the
 given to the column and the value of \texttt{output} is the name the output node
 has given to the column.
 
-\begin{lstlisting}[caption={A node's connection configuration. The node has a connection from its input group ``tweets'' to the node with id 9.}, captionpos=b, label={lst:connectionjson}]
+\begin{lstlisting}[language=javascript, caption={A node's connection configuration. The node has a connection from its input group ``tweets'' to the node with id 9.}, captionpos=b, label={lst:connectionjson}]
 {
   "tweets": {
     "output_node": 9,
@@ -688,7 +722,7 @@ output table for this node. Like each input group in \texttt{inputs}, it has a
 doesn't need a column mapping, since the column names are the same as the ones
 the node has assigned itself as outputs.
 
-\begin{lstlisting}[caption={The context passed into a ``Time by Day/Hour'' node's handler function.}, captionpos=b, label={lst:nodecontext}]
+\begin{lstlisting}[language=javascript, caption={The context passed into a ``Time by Day/Hour'' node's handler function.}, captionpos=b, label={lst:nodecontext}]
 {
   inputs: {
     tweets: {
@@ -1171,10 +1205,111 @@ can contribute these back to the community to create a resource of analytic and
 visualization modules.
 
 \appendix
-\chapter{Chapter 1 of appendix}
 
-Code will go here. Approximately 5600 lines and 100 typeset pages (landscape,
-two columns, 6pt).
+\newcommand{\middguardjs}[2][]{
+  \lstinputlisting[language=javascript,
+                   title={\detokenize{#2}},
+                   #1,
+                   captionpos=t,
+                   linewidth=0.7\textwidth,
+                   basicstyle=\small\linespread{1.2}\ttfamily,
+                   numbers=left,
+                   numberstyle=\footnotesize,
+                   numbersep=5pt]{../../middguard/#2}
+  \vfill
+  \columnbreak
+}
+
+\newcommand{\middguardcode}[2][]{
+  \lstinputlisting[title={\detokenize{#2}},
+                   #1,
+                   captionpos=t,
+                   linewidth=0.7\textwidth,
+                   basicstyle=\small\linespread{1.2}\ttfamily,
+                   numbers=left,
+                   numberstyle=\footnotesize,
+                   numbersep=5pt]{../../middguard/#2}
+  \vfill
+  \columnbreak
+}
+
+\begin{landscape}
+  \chapter{Chapter 1 of appendix}
+
+  \addtolength{\hoffset}{-2cm}
+  \addtolength{\textheight}{2cm}
+
+  \begin{multicols}{2}
+    \middguardjs{index.js}
+    \middguardjs{middguard/application.js}
+    \middguardjs{middguard/middguard.js}
+
+    \middguardjs{middguard/socket/index.js}
+    \middguardjs{middguard/socket/modules.js}
+    \middguardjs{middguard/socket/node.js}
+
+    \middguardjs{middguard/models/connection.js}
+    \middguardjs{middguard/models/graph.js}
+    \middguardjs{middguard/models/node.js}
+
+    \middguardjs{middguard/migrations/20140728124252_initial.js}
+    \middguardjs{middguard/migrations/20160405022013_node_coordinates.js}
+
+    \middguardjs{static/js/entities.js}
+    \middguardjs{static/js/visualization-manager.js}
+
+    \middguardjs{static/js/collections/graphs.js}
+    \middguardjs{static/js/collections/nodes.js}
+    \middguardjs{static/js/collections/packaged-modules.js}
+
+    \middguardjs{static/js/models/graph.js}
+    \middguardjs{static/js/models/node.js}
+    \middguardjs{static/js/models/packaged-module.js}
+
+    \middguardjs{static/js/views/graphs-view.js}
+    \middguardjs{static/js/views/graph-editor-view.js}
+
+    \middguardcode{./middguard/views/graph-editor-template.jade}
+    \middguardcode{./middguard/views/graphs-panel-template.jade}
+
+    % \middguardcode{static/css/graph-editor.css}
+  \end{multicols}
+
+  \addtolength{\hoffset}{2cm}
+  \addtolength{\textheight}{-2cm}
+\end{landscape}
+
+\begin{landscape}
+  \chapter{Chapter 2 of Appendix}
+
+  \addtolength{\hoffset}{-2cm}
+  \addtolength{\textheight}{2cm}
+
+  \begin{multicols}{2}
+    \middguardjs{examples/simple/index.js}
+    \middguardjs{examples/simple/knexfile.js}
+
+    \middguardjs{examples/simple/download-tweets-danarsilver/index.js}
+
+    \middguardjs{examples/simple/download-tweets-jack/index.js}
+
+    \middguardjs{examples/simple/aggregate-time/index.js}
+
+    \middguardjs{examples/simple/difference/index.js}
+
+    \middguardjs{examples/simple/hours-heatmap/index.js}
+    \middguardjs{examples/simple/hours-heatmap/static/hours-heatmap-view.js}
+    \middguardcode{examples/simple/hours-heatmap/static/hours-heatmap.css}
+
+    \middguardjs{examples/simple/peek-table/index.js}
+    \middguardjs{examples/simple/peek-table/static/peek-table-view.js}
+    \middguardcode{examples/simple/peek-table/static/peek-table.css}
+
+  \end{multicols}
+
+  \addtolength{\hoffset}{2cm}
+  \addtolength{\textheight}{-2cm}
+\end{landscape}
 
 \bibliography{thesis}
 
