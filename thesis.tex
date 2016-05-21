@@ -478,7 +478,7 @@ The browser, front-end, client, and other variants are all used to refer to the
 web browser, where MiddGuard's user interface lives. The browser is a
 non-traditional environment for visual analytics, which are often implemented as
 desktop applications to achieve higher performance through OS native code over
-JavaScript which runs non-natively in the browser. However we were inspired by
+JavaScript, which runs non-natively in the browser. However we were inspired by
 the expressiveness and ease with which we could create interactive
 visualizations with tools like D3.js \cite{2011-d3}, a JavaScript library for
 manipulating HTML, CSS, and SVG in the DOM based on data, and decided to
@@ -743,6 +743,10 @@ Backbone.js and consequentially MiddGuard visualization nodes have are not
 reliant on library or framework to manipulate the DOM and render a
 visualization. This keeps MiddGuard flexible for any toolchain a developer wants
 to use to create visualizations.
+
+Since only the representation of a visualization as a node and not the
+underlying structure of a visualization changed from the previous version of
+MiddGuard, View Reference Counting still works completely.
 
 A potential improvement in the implementation of visualization nodes would be to
 only instantiate collections for analytic nodes that output to visualization
@@ -1068,13 +1072,36 @@ transparency and reproducability of the investigation.
 
 \chapter{Conclusion}
 
-MiddGuard
+MiddGuard is an effective web framework to create complex visual analytics tools
+quickly. Its data-flow model and its visual representation allows investigators
+to see exactly what steps were applied to a dataset to produce a visualization,
+increasing transparency throughout the investigation and reproducability of
+results afterwards. While the previous version of MiddGuard required developers
+to load and preprocess data with scripts external to the framework, our use case
+demonstrated the ease with which we can write those scripts into the current
+version of MiddGuard and represent them in the data-flow model.
 
-  \begin{enumerate}
-    \item Revisit points from previous sections
-    \item Why MiddGuard is an important visual analytics tool
-    \item Open source prospects
-  \end{enumerate}
+Connections between nodes are a useful abstraction to simulate data flowing
+through the graph and generate the contextual input required to actually send
+data from node to node, while persisting it to a database. The model for
+extensiblity, analytic and visualization modules, is able to encompass
+operations that take place in the back-end and front-end and offer plug-and-play
+capabilities without sacrificing flexibility or developer choices for module
+implementation. The synchronous communication protocol implemented over
+WebSockets allows developers to work together to develop tools and share
+results.
+
+By abstracting away the details required to structure components and communicate
+data to a simple graph builder and built in tooling, MiddGuard lets analysts
+focus on writing and using the tools they need to analyze data in a timely
+manner. When taken together, these features make MiddGuard a novel tool for
+visual analytics.
+
+We plan on making MiddGuard open source software. Open sourcing MiddGuard will
+encourage contributions to the core framework from outside collaborators. As
+other users investigate data with MiddGuard and write their own modules, they
+can contribute these back to the community to create a resource of analytic and
+visualization modules.
 
 \appendix
 \chapter{Chapter 1 of appendix}
