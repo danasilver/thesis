@@ -22,14 +22,23 @@
 
 \begin{abstract}
 
-MiddGuard is a web framework for visual analytics.
+MiddGuard is a web framework for collaborative and extensible visual analytics.
+It is built on the idea that that a data-driven investigation can be represented
+as a graph of composible, chained data transformations and visualizations that
+are completely customizable by users and can take input from other arbitrary
+tools in the graph. The pairing of customization and arbitrary chainability
+allows investigation-specific, yet reusable tools. Additonally, MiddGuard is
+built for teams to collaborate on an investigation both asynchronously and
+synchronously. Multiple investigators can connect see a database persisted,
+real-time reflection of their colleagues' work building and generating data for
+a visual analytics investigation.
 
 \end{abstract}
 
 \begin{acknowledgements}
 
 Professor Andrews for his continued advisorship since we started collaborating
-over the summer of 2014. His work in visual analytics continues to inform and
+during the summer of 2014. His work in visual analytics continues to inform and
 inspire my work on MiddGuard.
 
 My family and friends for their support.
@@ -302,7 +311,7 @@ scriptable, and visually representable coordinations between views where
 MiddGuard relies on a global state manager, which developers can use as
 necessary to coordinate multiple views.
 
-Eagle Eyes \cite{7347662} is an interactive dataflow engine. Customizable
+Eagleyes \cite{7347662} is an interactive dataflow engine. Customizable
 modules that can be chained together to transform, query the data, and create
 visualizations. MiddGuard's data-flow model follows a similar data-flow model,
 extending it through a synchronous collaboration system that allows multiple
@@ -874,39 +883,97 @@ framework that allows investigators and developers to quickly and effectively
 create visual analytics tools. MiddGuard needs to be able to adapt to any
 investigation with any types of data and visualizations. To support any data or
 visualization, MiddGuard can register and load external code referred to as
-modules. While visual programming is the user interface for analysts to quickly
-put together an investigation with an expressive representation, the API for a
-module is the user interface for developers who work with MiddGuard, and need to
-quickly construct bespoke data transformations and visualizations.
+modules. The API for a module is the user interface for developers who work with
+MiddGuard, and need to quickly construct bespoke data transformations and
+visualizations.
 
-Modules are the constructors from which nodes are initialized. They expose all
-the metadata necessary to construct a node as well as the function or view that
-will be called or rendered when the node's play button is pressed. Each node
-contains a reference to the name of its constucting module so this metadata and
-function can be accessed at runtime.
+Modules are short and designed to be written quickly. The code in figure
+\ref{fig:analyticmodule} gives an example of an analytic module that aggregates
+tweets by the day of the week and hour of their timestamp. This module performs
+the final step of analysis in the ``Compare Tweets'' graph of figure
+\ref{fig:grapheditor} before data is fed into the visualization. This module is
+very small, but powerful when instantiated as a node and used in combination
+with other data transformations. Since MiddGuard modules are just Node.js
+modules, they can grow as needed, expanding to multiple files as necessary to
+organize code.
 
-Modules themselves are short and designed to be written quickly. Figure
-\ref{fig:analyticmodule} gives an example of an analytic module that bins tweets
-by the day of the week and hour of their timestamp. This module performs the
-final step of analysis in the ``Compare Tweets'' graph of figure
-\ref{fig:grapheditor} before data is fed into the visualization.
+An analytic module can be as simple as one JavaScript file that exports the five
+objects exported in figure \ref{fig:analyticmodule}. Those exports declare
+inputs, outputs, how to create a table for the module (\texttt{createTable}),
+and what to do when the module is run (\texttt{handle}). The display name is a
+``pretty'' version of the module's name in the file system used to label modules
+and nodes in the user interface.
 
-An analytic module can be as simple as one JavaScript file that exports the few
-objects as in figure \ref{fig:analyticmodule}. Those exports include an array
-of inputs the module can accept, grouped by input group. Each input group
-contains a list, \texttt{inputs}, of the attributes the module requires for each
-member of the input group. The second export is an array of output attributes
-for each member element the module will output.
-
-The outputs correspond directly to the contents of the third export, a function
-called \texttt{createTable}. The \texttt{createTable} function is used to create
-the backing table for a node. All nodes
+The \texttt{createTable} and \texttt{handle} functions are passed in the node's
+dynamically generated context based on its input connections and the name
+MiddGuard gives its table as described in the previous sections on connections
+and context. The \texttt{handle} function in figure \ref{fig:analyticmodule}
+demonstrates the use of its context. It uses
+\texttt{context.inputs.tweets.\\knex} (lines 28 and 38) to access the table where
+its input group \textit{tweets}, and
+\texttt{context.\\inputs.tweets.cols.timestamp} (line 29) to get the name of the
+timestamp column for that same input group, which it later (line 41) uses to
+access the timestamp attribute for each tweet. On line 48, the function uses
+\texttt{context.table.knex} to write data to its output.
 
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=.85\textwidth]{analyticmodule}
   \caption{Code for an example analytic module.}
   \label{fig:analyticmodule}
+\end{figure}
+
+Visualization modules are simpler than analytic modules in terms of exports, but
+often more complicated since they have to render a visualization in the browser.
+It is useful to separate the code for a visualization module into a main file,
+\textit{index.js}, that exports its configuration and directory,
+\textit{static}, at the same level, which contains the front-end visualization
+code.
+
+Figure \ref{fig:visualizationmodule} is the configuration code for a sample
+visualization module called ``Hours Heatmap''. Like an analytic module, it
+exports inputs, outputs, and a display name. To render on the front-end, it also
+exports (from top to bottom) that it is a visualization, the location of its
+front-end files (in this case, an adjacent directory called \textit{static}),
+the JavaScript and CSS files required on the front-end, and the name of the main
+view to initialize and render on the front-end when MiddGuard loads the
+visualization. The main view is must be a Backbone View included in one of the
+of the JavaScript files.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=.85\textwidth]{visualizationmodule}
+  \caption{Contents of the main configuration file, \textit{index.js}, for an
+  example visualization module, ``Hours Heatmap''.}
+  \label{fig:visualizationmodule}
+\end{figure}
+
+After a module is written, it can be added to a MiddGuard web server (Figure
+\ref{fig:middguardproject}). Like the modules, a MiddGuard-based server is
+intended to be short and easy to work with. Only a few lines are required to
+create the server and start listening for connections and adding a module is a
+single function call to the server's \texttt{module} function.
+
+Using a simple function call to load modules, rather than discovering them
+automatically, has a few advantages: it makes the investigation explicit about
+its module dependencies, raising an error immediately if a required module is
+missing; it allows a specific server to use different names (the first parameter
+passed to \texttt{module}) to identify the module in case of a naming conflict
+between two or more modules; and it allows the user to install and require a
+module from Node.js's package manager, rather than relatively from the file
+system.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=.85\textwidth]{middguardproject}
+  \caption{Code for an investigation's MiddGuard server. It creates an instance
+  of the MiddGuard server, passing in the database configuration from a Knexfile
+  \cite{knexjs} and a secret key to encrypt authenticated session data. This
+  investigation uses the two modules from figures \ref{fig:analyticmodule} and
+  \ref{fig:visualizationmodule} and registers them with calls to
+  \texttt{app.module}. Finally the server starts listening for connections on
+  port 3000.}
+  \label{fig:middguardproject}
 \end{figure}
 
 \section{Real-time Collaboration}
@@ -946,7 +1013,7 @@ Backbone.js Models and Collections, which traditionally use HTTP to perform
 create, read, update, and delete (CRUD) operations. We use third-party
 libraries, Backbone.ioBind and Backbone.ioSync, to replace the HTTP requests
 with a similar protocol using WebSocket events. A HTTP request \texttt{POST
-/graphs} becomes \texttt{socket.emit('graphs:create', data)}. Emitted from the
+/graphs} becomes \texttt{socket.emit(\\'graphs:create', data)}. Emitted from the
 the browser, these events offer no real advantage of their corresponding HTTP
 requests. The use case for WebSockets is emitting events and data from the
 server to the client, which is impossible over HTTP. With the connection open,
