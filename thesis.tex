@@ -40,16 +40,42 @@ research position the first summer I worked on MiddGuard.
 \end{acknowledgements}
 
 \contentspage
-\tablelistpage
 \figurelistpage
 
 \normalspacing \setcounter{page}{1} \pagenumbering{arabic}
 
 \chapter{Introduction}
 
-Be able to create bespoke visualizations quickly.
-
 \section{Visual Analytics}
+
+Visual analytics is the science of analytical reasoning facilitated by
+interactive visual interfaces \cite{illuminate}. A visual analytics based
+investigation combines tooling for data transformation and visualization with
+human judgment to evaluate information and gain insight. Effective visual
+analytics tools need to transform disparate types of data from different sources
+to support visualization and analysis. Investigations often involve responding
+to or preventing a threat and are time sensitive. In Illuminating the Path,
+Thomas and Cook write that ``Research is needed to create software that supports
+the most complex and time-consuming portions of the analytical process, so that
+analysts can respond to increasingly more complex questions.''
+\cite{illuminate}. For an investigation to be effective and conclusions to be
+convincing, results have to be understandable and reproducable.
+
+MiddGuard aims to address the challenges posed by visual analytics. It
+partitions the analytic process into a series of data transformations and
+visualizations, combining them into a unified, transparent model with a visual
+representation. MiddGuard provides the backing framework and integrated analytic
+environment to communicate data between teams of investigators and load/unload
+visualizations. Developing this scaffolding takes time to implement that could
+be spent on the investigative process.
+
+MiddGuard's model for extensibility allows developers to focus solely on writing
+the tools they need to transform data and render visualizations. It exposes
+simple APIs to extend the framework while remaining agnostic as the the
+implementation details. Both transformation and visualization tools can be
+written using any technologies. This allows developers to produce bespoke tools
+quickly.
+
 \begin{enumerate}
   \item Why this is a useful tool in the context of visual analytics.
 \end{enumerate}
@@ -610,29 +636,39 @@ string in all other connected nodes.
 
 \section{Visualization Nodes}
 
+Our model for visual analytics is incomplete without the visualizations
+themselves. We include visualizations in the data-flow model as their own nodes,
+which we refer to as \textit{visualization nodes}. By integrating visualizations
+into the data-flow model, we can pass data transformed by the analytic nodes
+directly into our visualizations.
+
 Visualization nodes, like analytic nodes, are added from modules in the graph
-editor. Like analytic nodes, visualization nodes have input groups that can be
-connected to output nodes, and column mappings between the two nodes on the ends
-of the connections. The primary difference between analytic nodes and
-visualization nodes is that the handler for an analytic node is a single
-function that is called and run on MiddGuard's back-end server, while the
-handler for a visualization node is a newly instantiated Backbone.js View
+editor. They have input groups that can be connected to output nodes, and column
+mappings between the two nodes on the ends of the connections. The primary
+difference between analytic nodes and visualization nodes is that the handler
+for a visualization node is a newly instantiated Backbone.js View
 \cite{backbone} that is rendered in the web client.
 
-The instantiated view for a visualization node has an instance method called
+The instantiated view for a visualization node has an instance method called\\
 \texttt{createContext}, which can be called to dynamically generate the context
 for a view, just as the MiddGuard generates the context for an analytic node on
 the back-end and passes it into the handler function. The context for a
-visualization node has the same structure as that of an analytic node, less the
-output \texttt{table}, since a visualization node's output is a visualization,
-rather than a table of data.
+visualization node has the same structure as that of an analytic node, without
+the output, since a visualization node's output is a visualization, rather than
+a table of data.
 
-Additionally, the \texttt{knex} key for each input group is replaced with an
-instance of a Backbone Collection (with a key aptly named \texttt{connection}),
-which can be used like the \texttt{knex} key to access the data from output node
-connected to that particular input. MiddGuard instantiates a Backbone collection
-for each analytic node and a corresponding endpoint on the back-end to transmit
-the analytic node's data to the collection, as required by a visualization node.
+Additionally, the Knex.js accessors for each input group are replaced with
+instances of Backbone.js Collections (with a new key aptly named
+\texttt{connection}), which can be used like the Knex.js accessor to access the
+data from output node connected to that particular input. MiddGuard instantiates
+a Backbone collection for each analytic node and a corresponding endpoint on the
+back-end to transmit the analytic node's data to the collection, as required by
+a visualization node.
+
+Backbone.js and consequentially MiddGuard visualization nodes have are not
+reliant on library or framework to manipulate the DOM and render a
+visualization. This keeps MiddGuard flexible for any toolchain a developer wants
+to use to create visualizations.
 
 A potential improvement in the implementation of visualization nodes would be to
 only instantiate collections for analytic nodes that output to visualization
@@ -644,16 +680,6 @@ front-end or add the event listeners that handle data transmission to Node.js's
 event loop on the back-end.
 
 \section{Visual Programming}
-
-Figure \ref{fig:sidebar} shows the sidebar with the ``Graphs'' panel in
-view and multiple graphs already created and listed below the new graph input.
-
-\begin{figure}[!ht]
-  \centering
-  \includegraphics[width=0.5\textwidth]{sidebar-graphs-panel}
-  \caption{MiddGuard's built-in sidebar with the ``Graphs'' panel in view.}
-  \label{fig:sidebar}
-\end{figure}
 
 Visual programming abstracts away the details of the data-flow model within
 MiddGuard as descibed in the previous sections, and the independent
@@ -851,19 +877,6 @@ we can send events from the server to the client to create, update, and delete
 Collections whenever the data change on the server, enabling real-time updates
 and collaboration for clients.
 
-  \begin{enumerate}
-    \item Dataflow programming
-    \item Visual programming
-    \item Collaborative/real-time
-    \item Extensibility
-    \begin{enumerate}
-      \item Front-end views
-      \item Back-end analytic nodes
-    \end{enumerate}
-    \item Reusable nodes (agnostic of input/output data)
-    \item Technology choices
-  \end{enumerate}
-
 \chapter{Discussion}
 
 \section{Use Case}
@@ -954,6 +967,32 @@ to the node's table. Besides simpler development, this solution would make it
 substantially easier to write tests for modules, which in MiddGuard's current
 state would require creating a database, starting the web server, and
 manipulating the user interface in a web browser.
+
+Outside the areas of improvement discovered during the use case, MiddGuard could
+be improved to better incorporate visualization nodes into the data flow.
+Visualization nodes should be able to modify data in the database and have their
+own data output to support brushing, linking, and detail in the browser.
+Visualization nodes need to be able to modify data, or at least report user
+interactions so the server can respond to them. This enables operations like
+those used in the VAST 2014 Challenge, where we selected car destinations to
+associate with points of interest on a map. Like analytic nodes take in data to
+transform, a new type of node, ``Event Nodes'' could take in events and
+associated data (like a click the destination under the mouse) and perform a
+data transformation to respond to that event.
+
+A second output, for visualization nodes to output a subset of the data they
+take in, could support brushing, linking, and detail interactions within the
+data-flow model, rather than in a separate and opaque global state with no
+visual representation. Other visualizations would take the output as their
+input, using it to render their own visualization. For example, the ``Hours
+Heatmap'' from the mock tweet investigation could output the data from a
+selected  day of the week, which would be read by a bar chart visualization and
+used to render a bar chart of cumulative tweets per day of the week. As the
+selected day changes in the ``Hours Heatmap'', the bar chart would receive
+updated data and rerender. Since analytic nodes output data following some
+transformation step, it is intuitive to the data-flow model that visualization
+nodes do the same. Building interactions into the data-flow model increases the
+transparency and reproducability of the investigation.
 
 \chapter{Conclusion}
   \begin{enumerate}
