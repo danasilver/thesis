@@ -280,15 +280,33 @@ the memory.
 Jigsaw \cite{Stasko:2008:JSI:1466620.1466622} is a visual analytics tool to
 explore and understand collections of text documents. Introduced in 2007, Jigsaw
 provides four visualizations, called views, to present different perspectives of
-the text and extracted entities. While MiddGuard is not a text based analytics
-tool, of interest to us are the concepts that drive Jigsaw's views. Views are
-coordinated and communicate with each other to update themselves. User
-interaction with one view updates the others. Multiple copies can be created
-from each view, each reflecting a different perspective of the data.
+the text and extracted entities. While MiddGuard is not a text based tool, the
+concepts that drive Jigsaw's views are of interest. Jigsaw views are coordinated
+and communicate with each other to update themselves. User interaction with one
+view updates the others. Multiple copies of each view can be created to reflect
+different perspectives of the data.
 
-Improvise \cite{weaver-2004a}
+MiddGuard supports customizable views, rather a limited, baked in, set. Like
+Jigsaw, MiddGuard allows multiple copies of each type of view to be added to the
+investigation, each with a different view of the data. MiddGuard visualizations
+can be coordinated using a global state manager. Like the views themselves,
+coordinations need to be developed manually.
 
-Eagle Eyes \cite{7347662}
+Improvise \cite{weaver-2004a} enables users to build and browse
+highly-coordinated visualizations interactively. It allows users to load data,
+create views, specify visual abstractions, and establish coordinations
+interactively. MiddGuard implements a similar build and browse system, where
+visualizations are assembled using a visual configuration and simultaneously
+rendered in the browser. Improvise places strong emphasis on complex,
+scriptable, and visually representable coordinations between views where
+MiddGuard relies on a global state manager, which developers can use as
+necessary to coordinate multiple views.
+
+Eagle Eyes \cite{7347662} is an interactive dataflow engine. Customizable
+modules that can be chained together to transform, query the data, and create
+visualizations. MiddGuard's data-flow model follows a similar data-flow model,
+extending it through a synchronous collaboration system that allows multiple
+analysts to work on the same data-flow at once.
 
 \chapter{The Framework}
 
@@ -984,8 +1002,6 @@ Table'' that takes any input and renders it as a table. We hooked this up to
 both the ``@DanaRSilver'' and ``@Jack'' modules and could immediately tell that
 our download had worked as intended. Since we could see the text of the tweets,
 we could also see that Jack retweets much more often than Dana.
-
-\section{Use Case Conclusions}
 
 \section{Areas for Improvement}
 
