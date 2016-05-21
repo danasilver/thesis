@@ -196,7 +196,10 @@ were not sufficient to obviate the need for preprocessing scripts. The
 investigators still wrote Python scripts to transform data and alter the
 database outside MiddGuard. The lack of record of how these scripts were used
 added a layer of opaqueness to the analytic process, making results hard to
-reproduce and collaboration difficult.
+reproduce and collaboration difficult. The framework designed and implemented in
+this thesis addresses the issues of transparency and reproducibility in the
+analytic process, while introducing a method to include the preprocessing script
+contents in MiddGuard.
 
 \subsection{View Reference Counting}
 
@@ -820,36 +823,96 @@ and collaboration for clients.
     \item Technology choices
   \end{enumerate}
 
-\section{Technology}
-  \begin{enumerate}
-    \item Node.js
-    \item Relational database (instead of NoSQL)
-    \item Socket.io
-    \item ORM
-    \item Backbone.js
-  \end{enumerate}
-
 \chapter{Discussion}
 
 \section{Use Case}
 
-\begin{enumerate}
-  \item Test/example case (tweet analysis)
-  \item Ease of use for developer
-  \item APIs exposed on front-end and back-end
-\end{enumerate}
+We constructed a small investigation into Twitter data to help implement and
+test MiddGuard as we implemented the framework. Using tweets from two users'
+timelines, we wanted to determine who tweets more each hour of each day of the
+week.
+
+To find an answer we wrote four analytic modules and two visualization modules.
+Our first two analytic modules accessed the Twitter API to download tweets from
+the two subjects, ``@DanaRSilver'' and ``@jack''. These are also the names of
+the respective modules. Next, we wrote ``Time by Day/Hour'', which uses tweets'
+timestamps to aggregate the them by day of the week and hour of day. Our last
+analytic module, ``Difference by Hour'', computes the difference between counts
+for each combination of day and hour and groups the two counts into a single
+table. We created a new graph and and connected the ``@DanaRSilver'' and
+``@jack'' nodes each to a ``Time by Day/Hour'' and fed those into a ``Difference
+by Hour'' node. Figure \ref{fig:tweetanalysisgraph} shows the complete graph.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.75\textwidth]{tweetanalysisgraph}
+  \caption{The complete graph from the mock investigation used to develop and
+  test MiddGuard.}
+  \label{fig:tweetanalysisgraph}
+\end{figure}
+
+Since our goal was to figure out who tweets more at each combination of hour of
+the day and day of the week, we wrote a visualization called ``Hours Heatmap'',
+a bubble chart with hours on the x axis and days on the y axis (Figure
+\ref{fig:punchcard}). Two circles, or bubbles, are drawn at entry in the chart,
+one for each person. The circles' radii are mapped to the number of times the
+corresponding person tweeted that hour and day. Mousing over a pair of circles
+adds a tooltip with the exact count.
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=1\textwidth]{punchcard}
+  \caption{The ``Hours Heatmap'' visualization from the mock investigation used
+  to develop and test MiddGuard. @DanaRSilver's tweets are orange, @jack's are
+  blue. Circle radii are mapped to the number of times each person tweeted in
+  that hour and day of the week.}
+  \label{fig:punchcard}
+\end{figure}
+
+From the ``Hours Heatmap'' visualization we are able to answer our question. We
+can look to any particular day and hour and see who tweets more. Wednesday at
+12pm, for example, Dana tweets more than Jack. Dana tweeted nine times and Jack
+tweeted twice. We are also able to identify some patterns in the tweets. Both
+people rarely tweet late at night, and never between 4am and 6am. Jack is more
+active on Saturday than Dana and both get a late start on the weekends.
+
+While we were investigating our primary question, we wanted to look at the data
+we received from the Twitter API as well, to make our investigation more
+transparent, and to test that we had downloaded tweets correctly without having
+to work with the database outside MiddGuard. We wrote a visualization ``Peek
+Table'' that takes any input and renders it as a table. We hooked this up to
+both the ``@DanaRSilver'' and ``@Jack'' modules and could immediately tell that
+our download had worked as intended. Since we could see the text of the tweets,
+we could also see that Jack retweets much more often than Dana.
+
+\section{Use Case Conclusions}
 
 \section{Areas for Improvement}
 
-\begin{enumerate}
-  \item Use in real investigation (VAST Challenge 2016)
-  \item Room for improvement
-  \begin{enumerate}
-    \item Better caching on front-end to help developers optimize DOM/memory
-    usage
-    \item Have to see if there is any else I don't have time to implement
-  \end{enumerate}
-\end{enumerate}
+The mock investigation into @DanaRSilver and @jack's tweets revealed two areas
+for improvement in MiddGuard. The first is that modules only can change context
+from between nodes with respect to the incoming and outgoing data. We have two
+almost identical modules to download @DanaRSilver's tweets and @jack's tweets.
+The only difference is the Twitter handle accessed. When one of our goals is
+reuse of the data transformation logic, it does not make sense to repeat logic
+just to change a variable. We could improve on this by allowing developers to
+define variables that can change from node to node and create an interface for
+investigators to define that variable for the node. This would have allowed us
+to write one module that downloads tweets, create two nodes from it, and pass
+``@DanaRSilver'' and ``@jack'' in as variables.
+
+Developing the modules was challenging, since it was hard to test if the
+transformation logic worked. We eventually created the ``Peek Table''
+visualization module to check the table contents, however this required creating
+multiple nodes and running the user interface to test. There is no way to remove
+data from a node, so if the transformation was applied and saved data
+incorrectly, additional nodes would have to be created to test the module again.
+This issue could be solved with a procedure to pass data through a module
+without creating a node in the user interface, and without persisting that data
+to the node's table. Besides simpler development, this solution would make it
+substantially easier to write tests for modules, which in MiddGuard's current
+state would require creating a database, starting the web server, and
+manipulating the user interface in a web browser.
 
 \chapter{Conclusion}
   \begin{enumerate}
