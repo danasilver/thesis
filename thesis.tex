@@ -1344,7 +1344,8 @@ visualization modules.
                    basicstyle=\scriptsize\linespread{1.2}\ttfamily,
                    numbers=left,
                    numberstyle=\scriptsize,
-                   numbersep=5pt]{../../middguard/#2}
+                   numbersep=5pt,
+                   xleftmargin=2em]{../../middguard/#2}
   \vfill
   \columnbreak
 }
@@ -1357,18 +1358,76 @@ visualization modules.
                    basicstyle=\scriptsize\linespread{1.2}\ttfamily,
                    numbers=left,
                    numberstyle=\scriptsize,
-                   numbersep=5pt]{../../middguard/#2}
+                   numbersep=5pt,
+                   xleftmargin=2em]{../../middguard/#2}
   \vfill
   \columnbreak
 }
 
 \begin{landscape}
-  \chapter{Chapter 1 of appendix}
+  \chapter{A Investigation with MiddGuard}
 
   \addtolength{\hoffset}{-2cm}
   \addtolength{\textheight}{2cm}
 
   \begin{multicols}{2}
+
+    The code in Appendix A implements the mock investigation described in the
+    use case. At the top level are \textit{index.js} and \textit{knexfile.js},
+    which setup the web server and configure the database connection
+    respectively. The other ten files implement the analytic and visualization
+    modules that we used to conduct the investigation. The analytic modules each
+    consist of a single file, an \textit{index.js} in a subdirectory of the
+    project. The visualization modules include an \textit{index.js} to configure
+    the module, and a JavaScript and CSS file each to render their
+    visualizations in the browser.
+
+    \middguardjs{examples/simple/index.js}
+    \middguardjs{examples/simple/knexfile.js}
+
+    \middguardjs{examples/simple/download-tweets-danarsilver/index.js}
+
+    \middguardjs{examples/simple/download-tweets-jack/index.js}
+
+    \middguardjs{examples/simple/aggregate-time/index.js}
+
+    \middguardjs{examples/simple/difference/index.js}
+
+    \middguardjs{examples/simple/hours-heatmap/index.js}
+    \middguardjs{examples/simple/hours-heatmap/static/hours-heatmap-view.js}
+    \middguardcode{examples/simple/hours-heatmap/static/hours-heatmap.css}
+
+    \middguardjs{examples/simple/peek-table/index.js}
+    \middguardjs{examples/simple/peek-table/static/peek-table-view.js}
+    \middguardcode{examples/simple/peek-table/static/peek-table.css}
+
+  \end{multicols}
+
+  \addtolength{\hoffset}{2cm}
+  \addtolength{\textheight}{-2cm}
+\end{landscape}
+
+\begin{landscape}
+  \chapter{Core Code from the MiddGuard Framework}
+
+  \addtolength{\hoffset}{-2cm}
+  \addtolength{\textheight}{2cm}
+
+  \begin{multicols}{2}
+
+    The code in Appendix B is the core of MiddGuard's data-flow model and
+    front-end visualization loading/unloading. Additional code, style sheets,
+    and HTML templates that make up complete MiddGuard framework have been
+    omitted from this listing. \textit{index.js},
+    \textit{middguard/application.js}, and \textit{middguard/middguard.js}
+    implement the web server from which all MiddGuard investigations (including
+    that in Appendix A) are instantiated. Code in
+    \textit{middguard/socket} implements server side of MiddGuard's WebSocket
+    protocol. \textit{middguard/models} and \textit{middguard/migrations}
+    contain models and schema to persist graphs and data to a database.
+    \textit{static} contains all front-end code for MiddGuard's client-side
+    environment.
+
     \middguardjs{index.js}
     \middguardjs{middguard/application.js}
     \middguardjs{middguard/middguard.js}
@@ -1397,38 +1456,6 @@ visualization modules.
 
     \middguardjs{static/js/views/graphs-view.js}
     \middguardjs{static/js/views/graph-editor-view.js}
-  \end{multicols}
-
-  \addtolength{\hoffset}{2cm}
-  \addtolength{\textheight}{-2cm}
-\end{landscape}
-
-\begin{landscape}
-  \chapter{Chapter 2 of Appendix}
-
-  \addtolength{\hoffset}{-2cm}
-  \addtolength{\textheight}{2cm}
-
-  \begin{multicols}{2}
-    \middguardjs{examples/simple/index.js}
-    \middguardjs{examples/simple/knexfile.js}
-
-    \middguardjs{examples/simple/download-tweets-danarsilver/index.js}
-
-    \middguardjs{examples/simple/download-tweets-jack/index.js}
-
-    \middguardjs{examples/simple/aggregate-time/index.js}
-
-    \middguardjs{examples/simple/difference/index.js}
-
-    \middguardjs{examples/simple/hours-heatmap/index.js}
-    \middguardjs{examples/simple/hours-heatmap/static/hours-heatmap-view.js}
-    \middguardcode{examples/simple/hours-heatmap/static/hours-heatmap.css}
-
-    \middguardjs{examples/simple/peek-table/index.js}
-    \middguardjs{examples/simple/peek-table/static/peek-table-view.js}
-    \middguardcode{examples/simple/peek-table/static/peek-table.css}
-
   \end{multicols}
 
   \addtolength{\hoffset}{2cm}
