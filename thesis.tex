@@ -58,14 +58,14 @@
 
 MiddGuard is a web framework for collaborative and extensible visual analytics.
 It is built on the idea that that a data-driven investigation can be represented
-as a graph of composible, chained data transformations and visualizations that
+as a graph of composable, chained data transformations and visualizations that
 are completely customizable by users and can take input from other arbitrary
 tools in the graph. The pairing of customization and arbitrary chainability
 allows investigation-specific, yet reusable tools. Additonally, MiddGuard is
 built for teams to collaborate on an investigation both asynchronously and
-synchronously. Multiple investigators can connect see a database persisted,
-real-time reflection of their colleagues' work building and generating data for
-a visual analytics investigation.
+synchronously. Multiple investigators can connect to a single MiddGuard server
+to see a database persisted, real-time reflection of their colleagues' work
+building and generating data for a visual analytics investigation.
 
 \end{abstract}
 
@@ -90,7 +90,7 @@ My family and friends for their support.
 
 Visual analytics is the science of analytical reasoning facilitated by
 interactive visual interfaces \cite{illuminate}. A visual analytics based
-investigation combines tooling for data transformation and visualization with
+investigation combines tools to transforma and visualize data with
 human judgment to evaluate information and gain insight. Effective visual
 analytics tools need to transform disparate types of data from different sources
 to support visualization and analysis. Investigations often involve responding
@@ -106,8 +106,9 @@ partitions the analytic process into a series of data transformations and
 visualizations, combining them into a unified, transparent model with a visual
 representation. MiddGuard provides the backing framework and integrated analytic
 environment to communicate data between teams of investigators and load/unload
-visualizations. Developing this scaffolding takes time to implement that could
-be spent on the investigative process.
+visualizations. By building on MiddGuard instead of implementing this
+scaffolding themselves, analysts can devote their time to the investigative
+process.
 
 MiddGuard's model for extensibility allows developers to focus solely on writing
 the tools they need to transform data and render visualizations. It exposes
@@ -146,10 +147,9 @@ disjoint Python scripts and the resulting manipulations were persisted to a
 SQLite database. On the back-end of the web service, a simple RESTful Python web
 server implemented with Flask \cite{flask} and Flask RESTful
 \cite{flask-restful} queried the database and transformed data for various
-front-end visualizations. The server also performed manipulations in addition
-those in the preprocessing stage on a request-by-request basis based on analyst
-input in the interactive visualizations. Figure \ref{fig:vast2014} shows the web
-interface for our tool.
+front-end visualizations. The server also manipulated data on a
+request-by-request basis using analyst input from the interactive
+visualizations. Figure \ref{fig:vast2014} shows the web interface for our tool.
 
 \begin{figure}[!ht]
   \centering
@@ -266,7 +266,7 @@ contents in MiddGuard.
 
 \subsection{View Reference Counting}
 
-In the original implementation, one of the MiddGuard's weaknesses was handling
+In the original implementation, one of MiddGuard's weaknesses was handling
 large amounts of data on the front-end. The framework was implemented to load
 the entire database into the browser with the idea that investigators would need
 access to all data during the investigation. MiddGuard's server would continue
@@ -483,8 +483,8 @@ on Google Chrome's V8 JavaScript engine. The runtime is structured around an
 event loop where callbacks are registered and fired later in the program's life.
 Most I/O operations are performed indirectly through the event loop, so the
 process rarely blocks, allowing high concurrency and scalability. MiddGuard's
-server is implemented in JavaScript running on Node.js. The code for its HTTP
-and WebSockets, servers take advantage of the event loop. WebSockets are a
+server is implemented in JavaScript running on Node.js. The framework's HTTP and
+WebSockets servers take advantage of the event loop. WebSockets are a
 bidirectional protocol for client-server communication. Since they are
 event-driven from the server, rather driven by the HTTP request-response cycle,
 WebSockets are simpler to implement and deploy with Node.js than with many
@@ -539,15 +539,15 @@ between nodes allow data to pass between them.
 
 \subsection{Analytic Nodes}
 
-One of the issues with the first version of MiddGuard was no integrated way to
-create and represent the preprocessing scripts used to transform data before
-visualization. These scripts did most of the work to setup and populate the
-database, so they were a major component missing from MiddGuard's idea of the
-analytic process. Nodes address this problem, creating a flexible representation
-within MiddGuard of the data processing phase of an investigation. In this
-section we will address the implementation of analytic nodes. Visualization
-nodes and their differences with respect to analytic nodes will be addressed in
-a subsequent section.
+The first version of MiddGuard did not support preprocessing scripts like the
+ones we used in the VAST 2014 Challenge to transform data before visualizing it.
+These scripts did most of the work to setup and populate the database, so they
+were a major component missing from MiddGuard's idea of the analytic process.
+Nodes address this problem, creating a flexible representation within MiddGuard
+of the data processing phase of an investigation. In this section we will
+address the implementation of analytic nodes. Visualization nodes and their
+differences with respect to analytic nodes will be addressed in a subsequent
+section.
 
 Analytic nodes are instances of modules, made unique from one another by the
 data they generate. MiddGuard is backed by a relational database where nodes are
@@ -557,11 +557,10 @@ press in the user interface. Nodes can be created throughout an investigation
 and multiple nodes can be created from each module, so a node's table is created
 just before its handler is called.
 
-Analytic modules specify a function that will be used to create all of its nodes
-tables. That function is passed in the name of the table to create and a
-connection the the database in the form of an SQL generator called Knex.js
-\cite{knexjs}. The function uses the connection and table name to generate the
-schema for its tables.
+Analytic modules specify a function that will be used to create all of its
+nodes' tables. That function is passed the table name to create and a Knex.js
+database connection. The function uses the connection and table name to generate
+the schema for its tables.
 
 Nodes are not standalone scripts, they can work together to perform complex
 transformations, just as a developer might run one script after the other. Each
@@ -569,15 +568,15 @@ node can output its data and receive input from other nodes. Inputs and outputs
 are passed into the node's handler function so it can use one to generate the
 other. The combination of input and output is a node's \textit{context}.
 Creating a node's contextual output involves only the node itself. Every node
-has exactly one output, its own table. Other nodes that receive input from it
-are simply querying that table. The output passed into a node's handler is a
-Knex.js database connection already assigned specifically to perform statements
-on the node's table. Creating a node's contextual inputs, however, requires
-analyzing its connections to other nodes.
+has exactly one output, which is a database table. Other nodes that receive
+input from this one are simply querying that table. The output passed into a
+node's handler is a Knex.js database connection already assigned specifically to
+perform statements on the node's table. Creating a node's contextual inputs,
+however, requires analyzing its connections to other nodes.
 
 \subsection{Connections}
 
-Connections a two-level protocol of node to node connections and
+Connections are a two-level protocol of node-to-node connections and
 intra-connection name mappings, used to determine the input passed into one node
 from another. Each node can have multiple named inputs, referred to as
 \textit{input groups}. Each input group can have exactly one connection to
@@ -654,18 +653,18 @@ has given to the column.
 
 \subsection{Connection Storage}
 
-The connections generated within the graph editor are stored in MiddGuard's
-table of nodes, as a JSON string in the same row as their corresponding input
-node. We considered multiple factors when deciding how to store connections in
-the database. We wanted a storage method that was portable, efficient, and
-convenient. Portability meant that we could easily export the configuration of
-nodes and connections to a text file so they could be read back in and the graph
-could be reassembled in a different system. Efficiency was determined by the
-number of database operations required to access the configuration. This was
-important since we have to read and write connections whenever a node is
-accessed or modified in the graph editor. Convenience meant that it was not
-overly complex to access and modify the connections from a programming
-perspective.
+The connections generated by interaction with the graph editor are stored in
+MiddGuard's table of nodes as a JSON string in the same row as their
+corresponding input node. We considered multiple factors when deciding how to
+store connections in the database. We wanted a storage method that was portable,
+efficient, and convenient. Portability meant that we could easily export the
+configuration of nodes and connections to a text file so they could be read back
+in and the graph could be reassembled in a different system. Efficiency was
+determined by the number of database operations required to access the
+configuration. This was important since we have to read and write connections
+whenever a node is accessed or modified in the graph editor. Convenience meant
+that it was not overly complex to access and modify the connections from a
+programming perspective.
 
 In addition to the JSON string storage method we implemented, we considered
 storing connections and nodes in separate tables, with either each column-level
