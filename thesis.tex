@@ -154,10 +154,11 @@ interface for our tool.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{vast-mc2-2014-cropped-scaled}
-  \caption{The web interface for Andrews and Silver's VAST 2014 entry. The
-  visualizations, from left to right, are a list of people, a master brushable
-  timeline and individual timelines for each person listed with selectable
-  events, and a map of GPS traces from the individuals' cars.}
+  \caption[Web interface for the VAST 2014 entry.]{The web interface for Andrews
+  and Silver's VAST 2014 entry. The visualizations, from left to right, are a
+  list of people, a master brushable timeline and individual timelines for each
+  person listed with selectable events, and a map of GPS traces from the
+  individuals' cars.}
   \label{fig:vast2014}
 \end{figure}
 
@@ -299,12 +300,13 @@ the memory.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{devtools-snapshot}
-  \caption{A screen capture of the Google Chrome DevTools Profiler demonstrating
-  the efficacy of View Reference Counting. The panel on the left shows three
-  snapshots. Snapshot 1 was taken before a view has was added. Snapshot 2 was
-  taken after a view was added and rendered with a significant amount of data
-  loaded into the browser. Snapshot 3 was taken after that view was removed and
-  the memory was reclaimed.}
+  \caption[Browser memory profiles with View Reference Counting.]{A screen
+  capture of the Google Chrome DevTools Profiler demonstrating the efficacy of
+  View Reference Counting. The panel on the left shows three snapshots. Snapshot
+  1 was taken before a view has was added. Snapshot 2 was taken after a view was
+  added and rendered with a significant amount of data loaded into the browser.
+  Snapshot 3 was taken after that view was removed and the memory was
+  reclaimed.}
   \label{fig:vrc}
 \end{figure}
 
@@ -622,27 +624,33 @@ an array called \texttt{connections}. Each object within the
 given to the column and the value of \texttt{output} is the name the output node
 has given to the column.
 
-\begin{lstlisting}[language=javascript, caption={A node's connection configuration. The node has a connection from its input group ``tweets'' to the node with id 9.}, captionpos=b, label={lst:connectionjson}]
-{
-  "tweets": {
-    "output_node": 9,
-    "connections": [
-      {
-        "output": "handle",
-        "input": "handle"
-      },
-      {
-        "output": "tweet",
-        "input": "tweet"
-      },
-      {
-        "output": "timestamp",
-        "input": "timestamp"
+\begin{figure}[!ht]
+  \begin{lstlisting}[language=javascript, gobble=4]
+    {
+      "tweets": {
+        "output_node": 9,
+        "connections": [
+          {
+            "output": "handle",
+            "input": "handle"
+          },
+          {
+            "output": "tweet",
+            "input": "tweet"
+          },
+          {
+            "output": "timestamp",
+            "input": "timestamp"
+          }
+        ]
       }
-    ]
-  }
-}
-\end{lstlisting}
+    }
+  \end{lstlisting}
+  \caption[The connection configuration for a node.]{A node's connection
+  configuration. The node has a connection from its input group ``tweets'' to
+  the node with id 9.}
+  \label{lst:connectionjson}
+\end{figure}
 
 \subsection{Connection Storage}
 
@@ -722,25 +730,30 @@ output table for this node. Like each input group in \texttt{inputs}, it has a
 doesn't need a column mapping, since the column names are the same as the ones
 the node has assigned itself as outputs.
 
-\begin{lstlisting}[language=javascript, caption={The context passed into a ``Time by Day/Hour'' node's handler function.}, captionpos=b, label={lst:nodecontext}]
-{
-  inputs: {
-    tweets: {
-      knex: [Object],            // database connection instance
-      cols: {
-        handle: 'handle',
-        tweet: 'tweet',
-        timestamp: 'timestamp'
+\begin{figure}
+  \begin{lstlisting}[language=javascript, gobble=2]
+  {
+    inputs: {
+      tweets: {
+        knex: [Object],            // database connection instance
+        cols: {
+          handle: 'handle',
+          tweet: 'tweet',
+          timestamp: 'timestamp'
+        },
+        tableName: 'download-tweets-danarsilver_1'
       },
-      tableName: 'download-tweets-danarsilver_1'
-    },
-    table: {
-      knex: [Object],            // database connection instance
-      name: 'aggregate-time_2'
+      table: {
+        knex: [Object],            // database connection instance
+        name: 'aggregate-time_2'
+      }
     }
   }
-}
-\end{lstlisting}
+  \end{lstlisting}
+  \caption{The context passed into a ``Time by Day/Hour'' node's handler
+  function.}
+  \label{lst:nodecontext}
+\end{figure}
 
 Having to make additional queries to access output nodes' table names is a
 potential source of ineffiency not addressed by our connections storage format.
@@ -819,13 +832,13 @@ panel.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{compare-tweets-graph-editor-no-sidebar}
-  \caption{MiddGuard's graph editor user interface, open on a graph named
-  ``Compare Tweets''. On the left, the modules panel lists all loaded modules,
-  from which nodes can be created. In the center, the graph editor canvas has
-  seven nodes initialized from their respective modules, and connections between
-  the nodes. On the right, the detail panel shows the column mappings between
-  the ``Difference by Hour'' node and its connections to two
-  ``Time by Day/Hour'' nodes.}
+  \caption[MiddGuard's graph editor user interface.]{MiddGuard's graph editor
+  user interface, open on a graph named ``Compare Tweets''. On the left, the
+  modules panel lists all loaded modules, from which nodes can be created. In
+  the center, the graph editor canvas has seven nodes initialized from their
+  respective modules, and connections between the nodes. On the right, the
+  detail panel shows the column mappings between the ``Difference by Hour'' node
+  and its connections to two ``Time by Day/Hour'' nodes.}
   \label{fig:grapheditor}
 \end{figure}
 
@@ -904,8 +917,9 @@ itself.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{middguard-analytic-node-annotated}
-  \caption{An analytic node in a graph. Important features are annotated and the
-  node's only input group, ``tweets'', is moused over to show its accompanying
+  \caption[An annotated analytic node.]{An annotated analytic node taken from
+  the MiddGuard graph editor. Important features are annotated and the node's
+  only input group, ``tweets'', is moused over to show its accompanying
   tooltip.}
   \label{fig:annotatednode}
 \end{figure}
@@ -952,7 +966,63 @@ access the timestamp attribute for each tweet. On line 48, the function uses
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=.85\textwidth]{analyticmodule}
+  \begin{lstlisting}[numbers=left,
+                     numberstyle=\footnotesize,
+                     numbersep=5pt,
+                     language=javascript,
+                     gobble=2]
+  var _ = require('lodash');
+  var Promise = require('bluebird');
+  var moment = require('moment');
+
+  exports.inputs = [
+    {name: 'tweets', inputs: ['handle', 'tweet', 'timestamp']}
+  ];
+
+  exports.outputs = [
+    'handle',
+    'day',
+    'hour',
+    'count'
+  ];
+
+  exports.displayName = 'Time by Day/Hour';
+
+  exports.createTable = function(tableName, knex) {
+    return knex.schema.createTable(tableName, function(table) {
+      table.string('handle');
+      table.integer('day');
+      table.integer('hour');
+      table.integer('count');
+    });
+  };
+
+  exports.handle = function(context) {
+    var tweets = context.inputs.tweets,
+        timestampCol = context.inputs.tweets.cols.timestamp,
+        week = [];
+
+    _.range(24).forEach(function(hour) {
+      _.range(7).forEach(function(day) {
+        week.push({day: day, hour: hour, count: 0});
+      });
+    });
+
+    return tweets.knex.select('*')
+    .then(function(tweets) {
+      tweets.forEach(function(tweet) {
+        var m = moment(tweet[timestampCol]),
+            day = +m.format('d'),
+            hour = +m.format('H');
+
+        _.find(week, {day: day, hour: hour}).count++;
+      });
+
+      return context.table.knex.insert(week);
+    });
+  };
+  \end{lstlisting}
+
   \caption{Code for an example analytic module.}
   \label{fig:analyticmodule}
 \end{figure}
@@ -976,9 +1046,38 @@ of the JavaScript files.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=.85\textwidth]{visualizationmodule}
-  \caption{Contents of the main configuration file, \textit{index.js}, for an
-  example visualization module, ``Hours Heatmap''.}
+  \begin{lstlisting}[numbers=left,
+                     numberstyle=\footnotesize,
+                     numbersep=5pt,
+                     language=javascript,
+                     gobble=2]
+  var path = require('path');
+
+  exports.inputs = [
+    {name: 'hours', inputs: ['day', 'hour', 'count1', 'count2']}
+  ];
+
+  exports.outputs = [];
+
+  exports.displayName = 'Hours Heatmap';
+
+  exports.visualization = true;
+
+  exports.static = path.join(__dirname, 'static');
+
+  exports.js = [
+    'hours-heatmap-view.js'
+  ];
+
+  exports.css = [
+    'hours-heatmap.css'
+  ];
+
+  exports.mainView = 'HoursHeatmapView';
+  \end{lstlisting}
+  \caption[The main configuration file for a visualization module.]{Contents of
+  the main configuration file, \textit{index.js}, for an example visualization
+  module, ``Hours Heatmap''.}
   \label{fig:visualizationmodule}
 \end{figure}
 
@@ -999,14 +1098,44 @@ system.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=.85\textwidth]{middguardproject}
-  \caption{Code for an investigation's MiddGuard server. It creates an instance
-  of the MiddGuard server, passing in the database configuration from a Knexfile
+
+  \begin{lstlisting}[numbers=left,
+                     numberstyle=\footnotesize,
+                     numbersep=5pt,
+                     language=javascript,
+                     gobble=2]
+  var middguard = require('middguard');
+
+  var app = middguard({
+    // database
+    'knex config': require('./knexfile'),
+
+    // sessions
+    'secret key': process.env.SECRET_KEY || 'keep me secret'
+  });
+
+  // Hours Heatmap Visualization Module
+  app.module('hours-heatmap', require.resolve('./hours-heatmap'));
+
+  // Time by Day/Hour Analytic Module
+  app.module('aggregate-time', require.resolve('./aggregate-time'));
+
+  // Start the server
+  var port = process.env.PORT || 3000;
+  app.listen(port, function () {
+    console.log('Listening on port %d...', port);
+  });
+  \end{lstlisting}
+
+  \caption[Example code for a MiddGuard-based server.]{Code for an
+  investigation's MiddGuard-based server. It creates an instance of the
+  MiddGuard server, passing in the database configuration from a Knexfile
   \cite{knexjs} and a secret key to encrypt authenticated session data. This
   investigation uses the two modules from figures \ref{fig:analyticmodule} and
   \ref{fig:visualizationmodule} and registers them with calls to
   \texttt{app.module}. Finally the server starts listening for connections on
   port 3000.}
+
   \label{fig:middguardproject}
 \end{figure}
 
@@ -1079,8 +1208,8 @@ by Hour'' node. Figure \ref{fig:tweetanalysisgraph} shows the complete graph.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=0.75\textwidth]{tweetanalysisgraph}
-  \caption{The complete graph from the mock investigation used to develop and
-  test MiddGuard.}
+  \caption[The complete graph from a use case.]{The complete graph from the mock
+  investigation used to develop and test MiddGuard.}
   \label{fig:tweetanalysisgraph}
 \end{figure}
 
@@ -1095,10 +1224,10 @@ adds a tooltip with the exact count.
 \begin{figure}[!ht]
   \centering
   \includegraphics[width=1\textwidth]{punchcard}
-  \caption{The ``Hours Heatmap'' visualization from the mock investigation used
-  to develop and test MiddGuard. @DanaRSilver's tweets are orange, @jack's are
-  blue. Circle radii are mapped to the number of times each person tweeted in
-  that hour and day of the week.}
+  \caption[A visualization rendered in the browser.]{The ``Hours Heatmap''
+  visualization from the mock investigation used to develop and test MiddGuard.
+  @DanaRSilver's tweets are orange, @jack's are blue. Circle radii are mapped to
+  the number of times each person tweeted in that hour and day of the week.}
   \label{fig:punchcard}
 \end{figure}
 
@@ -1212,9 +1341,9 @@ visualization modules.
                    #1,
                    captionpos=t,
                    linewidth=0.7\textwidth,
-                   basicstyle=\small\linespread{1.2}\ttfamily,
+                   basicstyle=\scriptsize\linespread{1.2}\ttfamily,
                    numbers=left,
-                   numberstyle=\footnotesize,
+                   numberstyle=\scriptsize,
                    numbersep=5pt]{../../middguard/#2}
   \vfill
   \columnbreak
@@ -1225,9 +1354,9 @@ visualization modules.
                    #1,
                    captionpos=t,
                    linewidth=0.7\textwidth,
-                   basicstyle=\small\linespread{1.2}\ttfamily,
+                   basicstyle=\scriptsize\linespread{1.2}\ttfamily,
                    numbers=left,
-                   numberstyle=\footnotesize,
+                   numberstyle=\scriptsize,
                    numbersep=5pt]{../../middguard/#2}
   \vfill
   \columnbreak
@@ -1268,11 +1397,6 @@ visualization modules.
 
     \middguardjs{static/js/views/graphs-view.js}
     \middguardjs{static/js/views/graph-editor-view.js}
-
-    \middguardcode{./middguard/views/graph-editor-template.jade}
-    \middguardcode{./middguard/views/graphs-panel-template.jade}
-
-    % \middguardcode{static/css/graph-editor.css}
   \end{multicols}
 
   \addtolength{\hoffset}{2cm}
