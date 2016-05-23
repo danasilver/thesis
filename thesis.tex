@@ -45,7 +45,7 @@
 
 \bibliographystyle{plain}
 
-\title {MiddGuard}
+\title {MiddGuard\\Collaborative and Extensible\\Visual Analytics}
 
 \author {Dana Silver}
 \adviser {Professor Christopher Andrews}
@@ -54,18 +54,21 @@
 
 \maketitle
 
+\pagenumbering{roman}
+
 \begin{abstract}
 
 MiddGuard is a web framework for collaborative and extensible visual analytics.
-It is built on the idea that that a data-driven investigation can be represented
-as a graph of composable, chained data transformations and visualizations that
-are completely customizable by users and can take input from other arbitrary
-tools in the graph. The pairing of customization and arbitrary chainability
-allows investigation-specific, yet reusable tools. Additonally, MiddGuard is
-built for teams to collaborate on an investigation both asynchronously and
-synchronously. Multiple investigators can connect to a single MiddGuard server
-to see a database persisted, real-time reflection of their colleagues' work
-building and generating data for a visual analytics investigation.
+It is built on the idea that a data-driven investigation can be represented as a
+graph of composable, chained data transformations and visualizations that are
+completely customizable by users and can take input from other arbitrary tools
+in the same graph. The pairing of customization and arbitrary chainability
+enables the creation of investigation-specific, yet reusable tools. Additonally,
+MiddGuard is built for teams to collaborate on an investigation both
+asynchronously and synchronously. Multiple investigators can connect to a single
+MiddGuard server to see a database-persisted, real-time reflection of their
+colleagues' work building and generating data for a visual analytics
+investigation.
 
 \end{abstract}
 
@@ -90,7 +93,7 @@ My family and friends for their support.
 
 Visual analytics is the science of analytical reasoning facilitated by
 interactive visual interfaces \cite{illuminate}. A visual analytics based
-investigation combines tools to transforma and visualize data with
+investigation combines tools to transform and visualize data with
 human judgment to evaluate information and gain insight. Effective visual
 analytics tools need to transform disparate types of data from different sources
 to support visualization and analysis. Investigations often involve responding
@@ -103,17 +106,17 @@ convincing, results have to be understandable and reproducable.
 
 MiddGuard aims to address the challenges posed by visual analytics. It
 partitions the analytic process into a series of data transformations and
-visualizations, combining them into a unified, transparent model with a visual
-representation. MiddGuard provides the backing framework and integrated analytic
-environment to communicate data between teams of investigators and load/unload
-visualizations. By building on MiddGuard instead of implementing this
-scaffolding themselves, analysts can devote their time to the investigative
+visualizations, combining them into a unified, transparent data-flow model with
+a visual representation. MiddGuard provides the backing framework and integrated
+analytic environment to communicate data between teams of investigators and
+load/unload visualizations. By building on MiddGuard instead of implementing
+this scaffolding themselves, analysts can devote their time to the investigative
 process.
 
 MiddGuard's model for extensibility allows developers to focus solely on writing
 the tools they need to transform data and render visualizations. It exposes
-simple APIs to extend the framework while remaining agnostic as the the
-implementation details. Both transformation and visualization tools can be
+simple APIs to extend the framework while remaining agnostic as to the
+implementation details: both transformation and visualization tools can be
 written using any technologies. This allows developers to produce bespoke tools
 quickly.
 
@@ -157,13 +160,13 @@ visualizations. Figure \ref{fig:vast2014} shows the web interface for our tool.
   \caption[Web interface for the VAST 2014 entry.]{The web interface for Andrews
   and Silver's VAST 2014 entry. The visualizations, from left to right, are a
   list of people, a master brushable timeline and individual timelines for each
-  person listed with selectable events, and a map of GPS traces from the
+  person with selectable events, and a map of GPS traces from the
   individuals' cars.}
   \label{fig:vast2014}
 \end{figure}
 
 For an example of the flow and feedback loop between preprocessing scripts,
-back-end server, and front-end visualizations we look how we used the
+back-end server, and front-end visualizations we look at how we used the
 Mini-Challenge 2 geographical data to identify points of interest and associate
 them with car destinations. The VAST 2014 Mini-Challenge 2 dataset included
 vehicle tracking data from company cars, an ESRI shapefile of the island where
@@ -187,12 +190,13 @@ investigation and write up the results.
 
 \subsection{MiddGuard: Summer 2014}
 
-The first version of MiddGuard, which was developed in response to summer
-research at Middlebury, attempted to generalize parts of the web server and
-front-end that could be reused throughout multiple investigations, while keeping
-the framework unopinionated with respect to the data it could handle.
+The first version of MiddGuard, which was developed in response to our summer
+research at Middlebury working on the VAST 2014 Challenge, attempted to
+generalize parts of the web server and front-end that could be reused throughout
+multiple investigations into a web framework, while staying unopinionated with
+respect to the data it could handle.
 
-From the VAST 2014 Challenge we drew conclusions that influenced the first
+From the VAST 2014 Challenge we drew conclusions that influenced this first
 version of MiddGuard. We found that the while the web could be an effective
 platform for visual analytics, the overhead of creating custom tools, getting
 those tools to work with the rest of the system, and implementation bugs in the
@@ -206,8 +210,8 @@ This version of MiddGuard achieved flexibility by automatically loading three
 types of customizable packages. These were referred to as analytics, modules,
 and models. Analytics were scripts that could be triggered by a remote procedure
 call from a front-end visualization. They could be passed data from the
-front-end. Using the VAST 2014 example, they were meant to handle computations
-like finding other destinations near a point of interest.
+front-end. In the context of the VAST 2014 example, they were meant to handle
+computations like finding other destinations near a point of interest.
 
 Modules were front-end visualizations that used JavaScript and CSS to render and
 style elements in the browser's DOM. Visualizations were interactive, could
@@ -221,7 +225,7 @@ work with any data. A database table could then be created from each model. The
 entire database was accessible on the front-end, with each table represented by
 a Backbone.js Collection, which acts like an array of table rows. Collections
 were updated in real-time using a publish-subscribe like method. Updates to a
-collection on the front-end and to a models on the back-end were communicated to
+collection on the front-end and to models on the back-end were communicated to
 one another in real-time. This allowed investigators to modify the data in
 visualization modules and analytics packages without implementing communication.
 By listening to changes in a Collection, a visualization could rerender as soon
@@ -245,15 +249,15 @@ analytics professionals, winning a VAST 2015 Challenge award for integrated
 analysis environment.
 
 The VAST 2015 Challenge investigation revealed some shortcomings of MiddGuard.
-Storing all data in a web browser wasn't realistic. Datasets for investigations,
-including VAST, are often several gigabytes in size, more than can fit in the
-browser while maintaining the performance required for interactive
-visualizations. Even with modifications to load subsets of the data, the
-Backbone Collections quickly grew large, and filled with unnecessary data not
-reflected in any active visualizations. View Reference Counting was designed to
-address this issue.
+Storing all data in a web browser was not realistic. Datasets for
+investigations, including VAST, are often several gigabytes in size, more than
+can fit in the browser while maintaining the performance required for
+interactive visualizations. Even with modifications to load subsets of the data,
+the Backbone Collections quickly grew large, and filled with unnecessary data
+not reflected in any active visualizations. View Reference Counting was designed
+to address this issue.
 
-Analytics packages, one of MiddGuard's built in tools for extensibility,
+Analytics packages, one of MiddGuard's built-in tools for extensibility,
 designed to run arbitrary code via remote procedure calls from the front-end,
 were not sufficient to obviate the need for preprocessing scripts. The
 investigators still wrote Python scripts to transform data and alter the
@@ -277,11 +281,12 @@ during VAST 2015. Instead of loading all data from the outset, visualization
 modules made custom database queries as necessary.
 
 This did not solve the problem of unused data in the browser. Once downloaded to
-the browser data was never removed, even after the visualization that required
-it was. MiddGuard stores all data in a central location to avoid the duplication
-that would occur by having each visualization store its own data. This makes it
-impossible for a visualization that has requested data to clean up after itself.
-Another visualization may have requested and currently be using the same data.
+the browser, data was never removed, even after the visualization had requested
+the data was no longer in use. MiddGuard stores all data in a central location
+to avoid the duplication that would occur by having each visualization store its
+own data. This makes it impossible for a visualization that has requested data
+to clean up after itself. Another visualization may have requested and currently
+be using the same data.
 
 To keep the deduplication advantages of central storage and clean up after
 visualizations that were removed from the browser, we implemented automatic
@@ -303,7 +308,7 @@ the memory.
   \caption[Browser memory profiles with View Reference Counting.]{A screen
   capture of the Google Chrome DevTools Profiler demonstrating the efficacy of
   View Reference Counting. The panel on the left shows three snapshots. Snapshot
-  1 was taken before a view has was added. Snapshot 2 was taken after a view was
+  1 was taken before a view was added. Snapshot 2 was taken after a view was
   added and rendered with a significant amount of data loaded into the browser.
   Snapshot 3 was taken after that view was removed and the memory was
   reclaimed.}
@@ -312,7 +317,7 @@ the memory.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics{devtools-snapshot-cropped}
+  \includegraphics[width=0.5\textwidth]{devtools-snapshot-cropped}
   \caption{The snapshots portion of figure \ref{fig:vrc}, cropped for
   readability.}
   \label{fig:vrccropped}
@@ -335,23 +340,23 @@ MiddGuard supports customizable views, rather a limited, baked in, set. Like
 Jigsaw, MiddGuard allows multiple copies of each type of view to be added to the
 investigation, each with a different view of the data. MiddGuard visualizations
 can be coordinated using a global state manager. Like the views themselves,
-coordinations need to be developed manually.
+coordinations need to be configured manually.
 
 Improvise \cite{weaver-2004a} enables users to build and browse
 highly-coordinated visualizations interactively. It allows users to load data,
-create views, specify visual abstractions, and establish coordinations
-interactively. MiddGuard implements a similar build and browse system, where
-visualizations are assembled using a visual configuration and simultaneously
-rendered in the browser. Improvise places strong emphasis on complex,
-scriptable, and visually representable coordinations between views where
-MiddGuard relies on a global state manager, which developers can use as
-necessary to coordinate multiple views.
+create views, specify visual abstractions, and establish coordinations.
+MiddGuard implements a similar build and browse system, where visualizations are
+assembled using a visual configuration and simultaneously rendered in the
+browser. Improvise places strong emphasis on complex, scriptable, and visually
+representable coordinations between views where MiddGuard relies on a global
+state manager, which developers can use as necessary to coordinate multiple
+views.
 
-Eagleyes \cite{7347662} is an interactive dataflow engine. Customizable
-modules that can be chained together to transform, query the data, and create
-visualizations. MiddGuard's data-flow model follows a similar data-flow model,
-extending it through a synchronous collaboration system that allows multiple
-analysts to work on the same data-flow at once.
+Eagleyes \cite{7347662} is an interactive dataflow engine. Customizable modules
+can be connected to transform and query the data, and create visualizations.
+MiddGuard's data-flow model is similar, with extensions for a synchronous
+collaboration system that allows multiple analysts to work on the same data-flow
+graph at once.
 
 \chapter{The Framework}
 
@@ -365,7 +370,7 @@ uniform and investigating that data requires bespoke tools. MiddGuard,
 rather than implementing all the specific tools necessary to address all
 possible scenarios, provides the scaffolding on which developers can bring and
 build their own tools. The user interface and web server that MiddGuard
-implement create a simple environment to connect and use those tools
+implements create a simple environment to connect and use those tools
 transparently and efficiently.
 
 MiddGuard breaks the operations of a visual analytics based investigation into
@@ -384,16 +389,16 @@ code that often live in a single file. We divide modules into two types to
 represent data transformation and visualization respectively. The former is
 called an analytic module, while the latter is a visualization module. Modules
 implement a simple protocol that MiddGuard is able to read and use to integrate
-the code into the framework. Analytic modules consist of code that runs solely
-on the web server. Visualization modules contain code that runs in the web
-browser to render DOM elements that make up its visualization.
+module code into the framework. Analytic modules consist of code that runs
+solely on the web server. Visualization modules contain code that runs in the
+web browser to render DOM elements that make up its visualization.
 
 Once the MiddGuard web server is running, investigators use these modules to
 build a data-flow graph. Modules are the graph's nodes. Edges between nodes
 describe data-flow from module to module. MiddGuard's web front-end comes with a
 graph editor that investigators use to add modules to the graph and connect
 modules to each other. Once added to the graph, a module has been instantiated
-in the context of the graph and is called a node. Analytic nodes can be chained
+in the context of that graph and is called a node. Analytic nodes can be chained
 from one to the next, making the graph a canvas to compose complex data
 transformations from multiple analytic modules, each with a singular task.
 Visualization modules can be connected to analytic nodes, which feed in data to
@@ -410,33 +415,35 @@ input from Entity A, Entity B, and the data to draw the underlying city map. An
 investigator can connect the heatmap to any two cars, people, bikes, etc. from
 another dataset and render a heatmap with no additional development effort. As
 developers and investigators use MiddGuard, they build up a library of these
-reusable tools. In a an investigation where time is a factor, being able to
+reusable tools. In an investigation where time is a factor, being able to
 quickly plug in and test data transformations and visualizations promotes the
 investigator's efficiency.
 
 \section{Example: Using Tweets to Investigate Relationships}
 
-An example of the data-flow model is using tweets to determine the relationships
-between multiple people: Alice, Bob, and Carlos. We start by writing three
-similar modules that use a JavaScript library to access the Twitter API and
-download all of the tweets for each person, respectively. Between the three
-modules we only need to change the Twitter handle for which we are downloading
-tweets. We add a graph called ``Tweet Relationships'' then create nodes from
-these modules and add them to the graph. We can use the number of times one user
-mentions (such as @Bob) another as a metric for the relationship, so we write
-another module called ``Mention Count'' that extracts mentions from each tweet
-and creates a mapping from the Twitter user mentioned to the number of times
-mentioned throughout the dataset. We add this module to the graph three times,
-and connect one ``Mention Count'' node to each of Alice, Bob, and Carlos's tweet
-download nodes. Already we are able to reuse ``Mention Count'' for each person's
-tweets. Finally, we visualize the relationships. We can use a force directed
-graph with a node for each person and strength of the edges proportional to the
-number of times one mentioned the other. Our visualization module, ``Force
-Directed Graph'' will take three inputs, one for each person. We create a node
-in the graph from the ``Force Directed Graph'' module and connect each of the
-outputs from our ``Mention Count'' nodes to the three inputs of ``Force Directed
-Graph''. Like the ``Mention Count'' module, ``Force Directed Graph'' is reusable
-and can be plugged into any three inputs.
+We can demonstrate the features of the data-flow model with a mock
+investigation. Our goal is to determine the relationships between multiple
+people: Alice, Bob, and Carlos. Our available data are lists of recent tweets
+each person has sent. We start by writing three similar modules that use a
+JavaScript library to access the Twitter API and download all of the tweets for
+each person, respectively. Between the three modules we only need to change the
+Twitter handle for which we are downloading tweets. We open MiddGuard and add a
+graph called ``Tweet Relationships'' then create nodes from these modules and
+add them to the graph. We can use the number of times one user mentions another
+(ex. Alice tweets the text ``@Bob'') as a metric for the relationship, so we
+write another module called ``Mention Count'' that extracts mentions from each
+tweet and creates a mapping from the Twitter user mentioned to the number of
+times mentioned throughout the incoming dataset. We add this module to the
+graph three times, and connect one ``Mention Count'' node to each of Alice, Bob,
+and Carlos's tweet download nodes. Already we are able to reuse ``Mention
+Count'' for each person's tweets. Finally, we visualize the relationships. We
+can use a force directed graph with a node for each person and strength of the
+edges proportional to the number of times one mentioned the other. Our
+visualization module, ``Force Directed Graph'' will take three inputs, one for
+each person. We create a node in the graph from the ``Force Directed Graph''
+module and connect each of the outputs from our ``Mention Count'' nodes to the
+three inputs of ``Force Directed Graph''. Like the ``Mention Count'' module,
+``Force Directed Graph'' is reusable and can be plugged into any three inputs.
 
 At this point our graph is ready to produce data and a visualization. We work
 from the data entry points to the visualization, running the tweet download
@@ -448,7 +455,7 @@ the visualization next to our graph in the browser window.
 \section{Collaboration}
 
 MiddGuard not only enables single investigators to create and work with these
-tools, but also has built in support for asynchronous and synchronous
+tools, but also has built-in support for asynchronous and synchronous
 collaboration between teams of investigators. The framework includes user
 registration and authentication so multiple investigators can create accounts,
 log in, and work on the same investigations with the same graphs and access to
@@ -483,12 +490,12 @@ on Google Chrome's V8 JavaScript engine. The runtime is structured around an
 event loop where callbacks are registered and fired later in the program's life.
 Most I/O operations are performed indirectly through the event loop, so the
 process rarely blocks, allowing high concurrency and scalability. MiddGuard's
-server is implemented in JavaScript running on Node.js. The framework's HTTP and
-WebSockets servers take advantage of the event loop. WebSockets are a
+server is implemented in JavaScript running on Node.js and its HTTP and
+WebSocket servers take advantage of the event loop. WebSocket is a
 bidirectional protocol for client-server communication. Since they are
-event-driven from the server, rather driven by the HTTP request-response cycle,
-WebSockets are simpler to implement and deploy with Node.js than with many
-traditional servers for other languages and web frameworks.
+event-driven from the server, rather than driven by the HTTP request-response
+cycle, WebSockets are simpler to implement and deploy with Node.js than with
+many traditional servers for other languages and web frameworks.
 
 Knex.js \cite{knexjs} is a SQL query builder with support for several relational
 databases including Postgres, MySQL, and SQLite. Knex exposes an API with
@@ -499,8 +506,8 @@ Knex.js to simplify database connections for custom analytic modules and make
 the framework flexible to whichever database is best suited to the
 investigation. For the VAST 2015 Challenge Andrews and Billings used a Postgres
 database and connected over the network to collaborate from separate machines
-using the same database. For single person investigations using SQLite is often
-preferable since it does not require a database connection.
+using the same database. SQLite is often preferable for single person
+investigations since it does not require running a database engine.
 
 Backbone.js \cite{backbone} is a front-end library designed to give structure to
 web applications. It consists of extendable Models, Views, and Collections, all
@@ -588,12 +595,12 @@ input group's name to the output node's table. This mapping is stored as a
 key-value pair where the key is the input group, and the value is the output
 table name.
 
-When MiddGuard generates the contextual inputs for a node, they key value
+When MiddGuard generates the contextual inputs for a node, the key value
 mapping allows developers to use the input group names they picked for the
 module to look up the values to access the input data. For the input context,
 the table name is translated to a combination of table name and a Knex.js
 accessor. The table name, while unnecessary for queries that only use that
-table, allow full flexibility for more advanced queries, such as table joins.
+table, allows full flexibility for more advanced queries, such as table joins.
 
 Input group to output node mappings tell us where a specific input's data lives,
 but not what the data looks like or how to refer to it. That is, we have the
@@ -602,12 +609,12 @@ its columns are named. Unless the only SQL we want to run is \texttt{SELECT *
 FROM `output table'}, we need more information.
 
 We address this at the second level of our connection protocol: intra-connection
-mappings within the input group to output node connection, that identify the
+mappings within the input group to output node connection that identify the
 column names in the output table. This is another set of key-value pairs that
 map the names the input node has assigned to each attribute in an input group,
-to the corresponding column to access in a the output table. When generating the
+to the corresponding column to access in the output table. When generating the
 contextual input for a node, this mapping is included for each input group. Like
-at the higher level of input group mappings, developers can look up the the
+at the higher level of input group mappings, developers can look up the
 output table column name using a key they pick to represent that attribute.
 
 Listing \ref{lst:connectionjson} shows an example connection configuration for a
@@ -618,7 +625,7 @@ called ``tweets'', which is connected to the output node with id \texttt{9}. The
 the same table. The column-level connections between the input group and output
 node \texttt{9} are stored within the input group. Column mappings are stored in
 an array called \texttt{connections}. Each object within the
-\texttt{connections} array has an a key \texttt{input} and a key
+\texttt{connections} array has a key \texttt{input} and a key
 \texttt{output}. The value of \texttt{input} is the name the input node has
 given to the column and the value of \texttt{output} is the name the output node
 has given to the column.
@@ -675,7 +682,7 @@ grouped each input group's columns in a single row.
 The first option (each column mapping has its own row) was appealing since it
 took advantange of the relational database, using foreign keys to associate
 column mappings with their nodes. However, this method is less portable since it
-requires multiple steps to export all the node information and their associate
+requires multiple steps to export all the node information and their associated
 column mappings from the database to a structured text file. It is also less
 efficient since it requires reading a row from the database for every column
 mapping, in addition to a row for every node. Finally, it would be less
@@ -706,7 +713,7 @@ method on a node's connections column.
 A node's connections can be edited in the graph editor until runtime, when a
 node's handler function is executed. At this point, MiddGuard makes a query for
 the node in the database and retrieves its stored connections. Parsing the
-connections JSON string lets MiddGuard access the mapping of input groups to
+JSON string of connections lets MiddGuard access the mapping of input groups to
 output nodes and the mappings of column names between nodes. MiddGuard makes
 additional queries to determine the table names of connected output nodes. With
 just this information, MiddGuard can construct the dynamically generated context
@@ -757,11 +764,11 @@ the node has assigned itself as outputs.
 Having to make additional queries to access output nodes' table names is a
 potential source of ineffiency not addressed by our connections storage format.
 A way around this would be to duplicate the table name each time it appears in a
-connections JSON string. We decided against duplicating the data and in favor of
-making additional database queries instead to avoid fragmenting the information,
-should the table name change. Should we need to update a node's table name, it
-can be done once for the row, rather than having to update the connections
-string in all other connected nodes.
+JSON string of connections. We decided against duplicating the data and in favor
+of making additional database queries instead to avoid fragmenting the
+information, should the table name change. Should we need to update a node's
+table name, it can be done once for the row, rather than having to update the
+JSON string in all other connected nodes.
 
 \section{Visualization Nodes}
 
@@ -789,13 +796,13 @@ a table of data.
 Additionally, the Knex.js accessors for each input group are replaced with
 instances of Backbone.js Collections (with a new key aptly named
 \texttt{connection}), which can be used like the Knex.js accessor to access the
-data from output node connected to that particular input. MiddGuard instantiates
-a Backbone collection for each analytic node and a corresponding endpoint on the
-back-end to transmit the analytic node's data to the collection, as required by
-a visualization node.
+data from the output node connected to that particular input. MiddGuard
+instantiates a Backbone Collection for each analytic node and a corresponding
+endpoint on the back-end to transmit the analytic node's data to the collection,
+as required by a visualization node.
 
-Backbone.js and consequentially MiddGuard visualization nodes have are not
-reliant on library or framework to manipulate the DOM and render a
+Backbone.js and consequentially MiddGuard visualization nodes are not
+reliant on a particular library or framework to manipulate the DOM and render a
 visualization. This keeps MiddGuard flexible for any toolchain a developer wants
 to use to create visualizations.
 
@@ -812,17 +819,17 @@ is little overhead in terms of memory usage to create an empty connection on the
 front-end or add the event listeners that handle data transmission to Node.js's
 event loop on the back-end.
 
-\section{Visual Programming}
+\section{Visual Configuration}
 
-Visual programming abstracts away the details of the data-flow model within
+A visual configuration abstracts away the details of the data-flow model within
 MiddGuard as descibed in the previous sections, and the independent
 implementation details of each node. A major motivation for MiddGuard is to
 facilite quick construction of complex visual analytic tools. MiddGuard's system
-for visual programming allows investigators to quickly compose data
-transformations and visualizations. The visual component creates an expressive
-representation of the steps to reproduce a visualization.
+for visually configuring nodes and connections allows investigators to quickly
+compose data transformations and visualizations. The visual component creates an
+expressive representation of the steps to reproduce a visualization.
 
-The visual programming interface takes place in the three panels of the graph
+The visual configuration interface is located in the three panels of the graph
 editor, seen in figure \ref{fig:grapheditor}. The left panel, titled
 ``Modules'', lists all modules from which nodes can be instantiated. Clicking a
 module's button in the list adds a node of that type to the canvas in the middle
@@ -850,23 +857,23 @@ make them easy to differentiate.
 Figure \ref{fig:annotatednode} shows an analytic node with all its elements for
 user interaction in view. The cross in the upper left corner is used to drag the
 node around the canvas. Allowing nodes to be draggable is a simple solution to
-problem of node layout. A downside is the additional effort and time required on
-the part of the user to position and reposition nodes in the canvas, but this is
-outweighed by both its simplicity to implement over a layout algorithm and the
-flexibility for the user to customize the graph view as best appeals to their
-idea of the investigation.
+the problem of node layout. A downside is the additional effort and time
+required on the part of the user to position and reposition nodes in the canvas,
+but this is outweighed by both its simplicity to implement over a layout
+algorithm and the flexibility for the user to customize the graph view as best
+appeals to their idea of the investigation.
 
 The ``play'' button, located in the top right of each node abstracts both
-analytic and visualization nodes' action. In an analytic node clicking play
+analytic and visualization nodes' actions. In an analytic node clicking play
 calls its handler function. In a visualization node, the play button creates a
 new instance of a visualization. Pressing a visualization node's play button
 again removes that visualization from the browser window. Like the graph
-editors, stack horizontally in the browser window. The user can scroll through
-them from left to right.
+editors, visualizations stack horizontally in the browser window. The user can
+scroll through them from left to right.
 
 While web scrolling is typically done vertically, we implemented view layout
 horizontally, since MiddGuard was designed to be used on the same system used
-for the preliminary VAST 2014 and VAST 2015 investigations. These investigations
+for the VAST 2014 and VAST 2015 investigations. These investigations
 used a system of three 27 inch displays arranged side by side
 \cite{middguard-dinofunworld}.
 
@@ -877,11 +884,11 @@ indicator, one of ``Not run'', ``In progress'', or ``Completed'' in red, yellow,
 or green, respectively. The status indicates whether the handler function has
 already been invoked. Investigators ultimately use the node's status to
 determine when a visualization is able to be rendered in the browser. Only once
-all a visualizations dependent nodes have been run and have a status of
+all a visualization's dependent nodes have been run and have a status of
 ``Completed'', can a visualization be rendered.
 
 The connections between nodes' inputs and outputs are key components in the
-visual programming interface. They represent connecting code paths and passing
+visual configuration. They represent connecting code paths and passing
 data from one node to another. A connection can be created from one node to
 another by selecting one green input group indicator seen at the top of the node
 in figure \ref{fig:annotatednode} and one red output indicator like the one seen
@@ -907,15 +914,15 @@ pairing after the connection has been made manually.
 The similarity between interactions to edit connections at both the node and
 column level and the color coding of inputs and outputs in both the graph editor
 canvas and the detail panel is intentional, meant to make graph construction
-intuitive for an investigator. The goal of visual programming is to reduce the
-complications for an investigator to create a complex program. A familiar, easy
-to learn user interface promotes quick, simple development and reduces the
+intuitive for an investigator. The goal of the visual configuration is to reduce
+the complications for an investigator to create a complex program. A familiar,
+easy to learn user interface promotes quick, simple development and reduces the
 cognitive load devoted to MiddGuard as a tool rather than the investigation
 itself.
 
 \begin{figure}[!ht]
   \centering
-  \includegraphics[width=1\textwidth]{middguard-analytic-node-annotated}
+  \includegraphics[width=0.85\textwidth]{middguard-analytic-node-annotated}
   \caption[An annotated analytic node.]{An annotated analytic node taken from
   the MiddGuard graph editor. Important features are annotated and the node's
   only input group, ``tweets'', is moused over to show its accompanying
@@ -930,9 +937,9 @@ framework that allows investigators and developers to quickly and effectively
 create visual analytics tools. MiddGuard needs to be able to adapt to any
 investigation with any types of data and visualizations. To support any data or
 visualization, MiddGuard can register and load external code referred to as
-modules. The API for a module is the user interface for developers who work with
-MiddGuard, and need to quickly construct bespoke data transformations and
-visualizations.
+\textit{modules}. The API for a module is the user interface for developers who
+work with MiddGuard, and need to quickly construct bespoke data transformations
+and visualizations.
 
 Modules are short and designed to be written quickly. The code in figure
 \ref{fig:analyticmodule} gives an example of an analytic module that aggregates
@@ -957,11 +964,11 @@ MiddGuard gives its table as described in the previous sections on connections
 and context. The \texttt{handle} function in figure \ref{fig:analyticmodule}
 demonstrates the use of its context. It uses
 \texttt{context.inputs.tweets.\\knex} (lines 28 and 38) to access the table where
-its input group \textit{tweets}, and
-\texttt{context.\\inputs.tweets.cols.timestamp} (line 29) to get the name of the
+its input group \textit{tweets} is stored, and
+\texttt{context.inputs.tweets.cols.timestamp} (line 29) to get the name of the
 timestamp column for that same input group, which it later (line 41) uses to
 access the timestamp attribute for each tweet. On line 48, the function uses
-\texttt{context.table.knex} to write data to its output.
+\texttt{context.table.\\knex} to write data to its output.
 
 \begin{figure}[!ht]
   \centering
@@ -1029,7 +1036,7 @@ access the timestamp attribute for each tweet. On line 48, the function uses
 Visualization modules are simpler than analytic modules in terms of exports, but
 often more complicated since they have to render a visualization in the browser.
 It is useful to separate the code for a visualization module into a main file,
-\textit{index.js}, that exports its configuration and directory,
+\textit{index.js}, which exports its configuration and a directory,
 \textit{static}, at the same level, which contains the front-end visualization
 code.
 
@@ -1040,8 +1047,8 @@ exports (from top to bottom) that it is a visualization, the location of its
 front-end files (in this case, an adjacent directory called \textit{static}),
 the JavaScript and CSS files required on the front-end, and the name of the main
 view to initialize and render on the front-end when MiddGuard loads the
-visualization. The main view is must be a Backbone View included in one of the
-of the JavaScript files.
+visualization. The main view must be a Backbone View included in one of the
+JavaScript files.
 
 \begin{figure}[!ht]
   \centering
@@ -1083,8 +1090,8 @@ of the JavaScript files.
 After a module is written, it can be added to a MiddGuard web server (Figure
 \ref{fig:middguardproject}). Like the modules, a MiddGuard-based server is
 intended to be short and easy to work with. Only a few lines are required to
-create the server and start listening for connections and adding a module is a
-single function call to the server's \texttt{module} function.
+create the server and start listening for web client connections. Adding a
+module is a single function call to the server's \texttt{module} function.
 
 Using a simple function call to load modules, rather than discovering them
 automatically, has a few advantages: it makes the investigation explicit about
@@ -1165,7 +1172,7 @@ authenticated and logged in. WebSockets is a bidirectional event-driven
 communication protocol designed for browers and servers to exchange data without
 relying on HTTP requests and responses \cite{mdn-websockets}. WebSockets are
 layered on TCP. The connection from the browser to the server is initiated with
-the HTTP Upgrade header and client-server handshake after the browser has
+the HTTP Upgrade header and a client-server handshake after the browser has
 received a traditional HTTP response from the server with the code to perform
 the Upgrade request \cite{RFC6455}.
 
@@ -1176,7 +1183,7 @@ create, read, update, and delete (CRUD) operations. We use third-party
 libraries, Backbone.ioBind and Backbone.ioSync, to replace the HTTP requests
 with a similar protocol using WebSocket events. A HTTP request \texttt{POST
 /graphs} becomes \texttt{socket.emit(\\'graphs:create', data)}. Emitted from the
-the browser, these events offer no real advantage of their corresponding HTTP
+browser, these events offer no real advantage over their corresponding HTTP
 requests. The use case for WebSockets is emitting events and data from the
 server to the client, which is impossible over HTTP. With the connection open,
 we can send events from the server to the client to create, update, and delete
@@ -1200,7 +1207,7 @@ the respective modules. Next, we wrote ``Time by Day/Hour'', which uses tweets'
 timestamps to aggregate the them by day of the week and hour of day. Our last
 analytic module, ``Difference by Hour'', computes the difference between counts
 for each combination of day and hour and groups the two counts into a single
-table. We created a new graph and and connected the ``@DanaRSilver'' and
+table. We created a new graph and connected the ``@DanaRSilver'' and
 ``@jack'' nodes each to a ``Time by Day/Hour'' and fed those into a ``Difference
 by Hour'' node. Figure \ref{fig:tweetanalysisgraph} shows the complete graph.
 
@@ -1235,7 +1242,7 @@ can look to any particular day and hour and see who tweets more. Wednesday at
 12pm, for example, Dana tweets more than Jack. Dana tweeted nine times and Jack
 tweeted twice. We are also able to identify some patterns in the tweets. Both
 people rarely tweet late at night, and never between 4am and 6am. Jack is more
-active on Saturday than Dana and both get a late start on the weekends.
+active on Saturday than Dana and both get a late start on the weekend.
 
 While we were investigating our primary question, we wanted to look at the data
 we received from the Twitter API as well, to make our investigation more
@@ -1243,14 +1250,15 @@ transparent, and to test that we had downloaded tweets correctly without having
 to work with the database outside MiddGuard. We wrote a visualization ``Peek
 Table'' that takes any input and renders it as a table. We hooked this up to
 both the ``@DanaRSilver'' and ``@Jack'' modules and could immediately tell that
-our download had worked as intended. Since we could see the text of the tweets,
-we could also see that Jack retweets much more often than Dana.
+our download had worked as intended. Since we could see the text of the tweets
+in this alternate view of the data, we could also see that Jack retweets much
+more often than Dana.
 
 \section{Areas for Improvement}
 
 The mock investigation into @DanaRSilver and @jack's tweets revealed two areas
 for improvement in MiddGuard. The first is that modules only can change context
-from between nodes with respect to the incoming and outgoing data. We have two
+between nodes with respect to the incoming and outgoing data. We have two
 almost identical modules to download @DanaRSilver's tweets and @jack's tweets.
 The only difference is the Twitter handle accessed. When one of our goals is
 reuse of the data transformation logic, it does not make sense to repeat logic
@@ -1282,13 +1290,13 @@ interactions so the server can respond to them. This enables operations like
 those used in the VAST 2014 Challenge, where we selected car destinations to
 associate with points of interest on a map. Like analytic nodes take in data to
 transform, a new type of node, ``Event Nodes'' could take in events and
-associated data (like a click the destination under the mouse) and perform a
+associated data (like a click and the destination under the mouse) and perform a
 data transformation to respond to that event.
 
 A second output, for visualization nodes to output a subset of the data they
 take in, could support brushing, linking, and detail interactions within the
 data-flow model, rather than in a separate and opaque global state with no
-visual representation. Other visualizations would take the output as their
+visual representation. Other visualizations would take that output as their
 input, using it to render their own visualization. For example, the ``Hours
 Heatmap'' from the mock tweet investigation could output the data from a
 selected  day of the week, which would be read by a bar chart visualization and
@@ -1321,7 +1329,7 @@ WebSockets allows developers to work together to develop tools and share
 results.
 
 By abstracting away the details required to structure components and communicate
-data to a simple graph builder and built in tooling, MiddGuard lets analysts
+data to a simple graph builder and built-in tooling, MiddGuard lets analysts
 focus on writing and using the tools they need to analyze data in a timely
 manner. When taken together, these features make MiddGuard a novel tool for
 visual analytics.
@@ -1364,10 +1372,10 @@ visualization modules.
 }
 
 \begin{landscape}
-  \chapter{A Investigation with MiddGuard}
+  \chapter{An Investigation with MiddGuard}
 
-  \addtolength{\hoffset}{-2cm}
-  \addtolength{\textheight}{2cm}
+  \addtolength{\hoffset}{-1cm}
+  \addtolength{\textheight}{1cm}
 
   \begin{multicols}{2}
 
@@ -1402,21 +1410,21 @@ visualization modules.
 
   \end{multicols}
 
-  \addtolength{\hoffset}{2cm}
-  \addtolength{\textheight}{-2cm}
+  \addtolength{\hoffset}{1cm}
+  \addtolength{\textheight}{-1cm}
 \end{landscape}
 
 \begin{landscape}
   \chapter{Core Code from the MiddGuard Framework}
 
-  \addtolength{\hoffset}{-2cm}
-  \addtolength{\textheight}{2cm}
+  \addtolength{\hoffset}{-1cm}
+  \addtolength{\textheight}{1cm}
 
   \begin{multicols}{2}
 
     The code in Appendix B is the core of MiddGuard's data-flow model and
     front-end visualization loading/unloading. Additional code, style sheets,
-    and HTML templates that make up complete MiddGuard framework have been
+    and HTML templates that make up complete the MiddGuard framework have been
     omitted from this listing. \textit{index.js},
     \textit{middguard/application.js}, and \textit{middguard/middguard.js}
     implement the web server from which all MiddGuard investigations (including
@@ -1457,8 +1465,8 @@ visualization modules.
     \middguardjs{static/js/views/graph-editor-view.js}
   \end{multicols}
 
-  \addtolength{\hoffset}{2cm}
-  \addtolength{\textheight}{-2cm}
+  \addtolength{\hoffset}{1cm}
+  \addtolength{\textheight}{-1cm}
 \end{landscape}
 
 \bibliography{thesis}
